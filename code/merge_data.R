@@ -1,8 +1,8 @@
 library(tidyverse)
 
 # Load the data
-dengue_rj <- read_csv("data/dengue_rj_from2025.csv")
-climate_rj_weekly <- read_csv("data/climate_rj_from2025_weekly.csv")
+dengue_rj <- read_csv("data/dengue_rj.csv")
+climate_rj_weekly <- read_csv("data/climate_rj_weekly.csv")
 
 # Merge the datasets by epiweek 
 dengue_climate_rj <- dengue_rj %>%
@@ -16,4 +16,4 @@ dengue_climate_rj <- dengue_rj %>%
             umid_med_avg,
             umid_min_avg
             )) %>%
-  write_csv("data/dengue_climate_rj_from2025.csv")
+  write_csv("data/dengue_climate_rj.csv")

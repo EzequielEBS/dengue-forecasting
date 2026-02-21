@@ -1,6 +1,6 @@
 library(tidyverse)
 
-climate_rj <- read_csv("data/climate_rj_from2025.csv")
+climate_rj <- read_csv("data/climate_rj.csv")
 climate_rj %>%
   group_by(epiweek) %>%
   summarise(geocodigo = first(geocodigo),
@@ -11,5 +11,5 @@ climate_rj %>%
             umid_min_avg = mean(umid_min),
             umid_max_avg = mean(umid_max),
             umid_med_avg = mean(umid_med)) %>%
-  write_csv("data/climate_rj_from2025_weekly.csv")
+  write_csv("data/climate_rj_weekly.csv")
   
