@@ -1,6 +1,7 @@
 library(INLA)
 library(tidyverse)
 library(ggplot2)
+library(patchwork)
 
 # Load the data
 dengue_climate_rj <- read.csv("data/dengue_climate_rj.csv")
@@ -63,6 +64,82 @@ plot_M2 <- plot_all_predictions(results_M2)
 
 ggsave("figures/plot_pred_M1.png", plot_M1, width = 15, height = 6)
 ggsave("figures/plot_pred_M2.png", plot_M2, width = 15, height = 6)
+
+# Plot credibility intervals for all predictions together
+
+compute_bcis <- function(results) {
+  bcis <- list()
+  for (i in seq_along(results$fit)) {
+    fit <- results$fit[[i]]
+    coef <- fit$summary.fixed
+    bcis[[i]] <- data.frame(
+      window = i,
+      term = rownames(coef),
+      mean = coef$mean,
+      lower = coef$`0.025quant`,
+      upper = coef$`0.975quant`
+    )
+  }
+  do.call(rbind, bcis)
+}
+
+bcis_M1 <- compute_bcis(results_M1)
+plot_bcis_M1 <- 
+  ggplot(bcis_M1 %>% filter(term %in% c("tempmed", "umidmed")),
+        aes(x = window, y = mean, color = term)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = term), alpha = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(y = "Coefficient", x = "Window") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+
+plot_inter_M1 <- 
+  ggplot(bcis_M1 %>% filter(term %in% c("(Intercept)")),
+        aes(x = window, y = mean, color = "inter")) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = "inter"), alpha = 0.2) +
+  scale_color_manual(name = "", values = c("inter" = "blue"),
+                     labels = c("Intercept")) +
+  scale_fill_manual(name = "", values = c("inter" = "blue"),
+                    labels = c("Intercept")) +
+  # geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(y = "Intercept", x = "Window") +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "none")
+
+bcis_M2 <- compute_bcis(results_M2)
+plot_bcis_M2 <- 
+  ggplot(bcis_M2 %>% filter(term %in% c("tempmed_lag5", "umidmed_lag8")),
+        aes(x = window, y = mean, color = term)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = term), alpha = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(y = "Coefficient", x = "Window") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+
+plot_inter_M2 <- 
+  ggplot(bcis_M2 %>% filter(term %in% c("(Intercept)")),
+        aes(x = window, y = mean, color = "inter")) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = "inter"), alpha = 0.2) +
+  scale_color_manual(name = "", values = c("inter" = "blue"),
+                     labels = c("Intercept")) +
+  scale_fill_manual(name = "", values = c("inter" = "blue"),
+                    labels = c("Intercept")) +
+  # geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(y = "Intercept", x = "Window") +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "none")
+
+
+ggsave("vignettes/figures/plot_bcis_M1.png", plot_inter_M1 + plot_bcis_M1,
+        width = 15, height = 6)
+ggsave("vignettes/figures/plot_bcis_M2.png", plot_bcis_M2 + plot_inter_M2,
+        width = 15, height = 6)
 
 # summary
 

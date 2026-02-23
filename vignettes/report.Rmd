@@ -114,6 +114,8 @@ $$
 
 ![Predictions for each window - Model 1](figures/plot_pred_M1.png)
 
+![Credibility Intervals for Model 1](figures/plot_bcis_M1.png)
+
 ## Model 2
 
 We change the model 1 by including lagged effects of the covariates:
@@ -126,6 +128,8 @@ u_i &\sim \text{RW1}(\sigma^2_u).
 $$
 
 ![Predictions for each window - Model 2](figures/plot_pred_M2.png)
+
+![Credibility Intervals for Model 2](figures/plot_bcis_M2.png)
 
 ## Model Comparison Results
 
