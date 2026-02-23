@@ -4,6 +4,10 @@ library(ggplot2)
 library(purrr)
 
 # https://www.paulamoraga.com/book-geospatial/sec-inla.html
+# https://github.com/chlobular/ghr-imdc-2025
+# https://github.com/anabento/DengueSprint_Cornell-PEH
+# https://github.com/marciomacielbastos/MosqlimateSprint2025
+# https://github.com/lsbastos/sprint2025
 
 # Load the data
 dengue_climate_rj <- read.csv("data/dengue_climate_rj.csv")
@@ -20,7 +24,7 @@ dengue_climate_rj$time_id <- as.numeric(factor(dengue_climate_rj$epiweek))
 dengue_climate_rj$year_id <- as.numeric(factor(dengue_climate_rj$year))
 dengue_climate_rj$obs_id <- 1:nrow(dengue_climate_rj) 
 
-run_inla_model <- function(trashold_week, formula) {
+run_inla_model <- function(trashold_week, formula, quantiles = c(0.025, 0.975)) {
   train_data <- dengue_climate_rj[dengue_climate_rj$epiweek <= dengue_climate_rj$epiweek[trashold_week], ]
   test_data <- dengue_climate_rj[dengue_climate_rj$epiweek > dengue_climate_rj$epiweek[trashold_week] &
                                  dengue_climate_rj$epiweek <= dengue_climate_rj$epiweek[trashold_week + 3], ]
@@ -32,14 +36,18 @@ run_inla_model <- function(trashold_week, formula) {
                data = data_inla,
                family = "nbinomial",
                control.predictor = list(compute = TRUE,
-                                        link = 1),
-               control.compute = list(dic = TRUE, waic = TRUE)
+                                        link = 1,
+                                        quantiles = quantiles
+                                        ),
+               control.compute = list(dic = TRUE, 
+                                      waic = TRUE
+                                    )
   )
   
   data_inla$obs <- obs_values
   data_inla$predicted_cases <- fit$summary.fitted.values$mean
-  data_inla$lower_ci <- fit$summary.fitted.values$`0.025quant`
-  data_inla$upper_ci <- fit$summary.fitted.values$`0.975quant`
+  data_inla$lower_ci <- fit$summary.fitted.values$`0.05quant`
+  data_inla$upper_ci <- fit$summary.fitted.values$`0.95quant`
   data_inla$data_iniSE <- as.Date(data_inla$data_iniSE)
   
   plot <- ggplot(data_inla, aes(x = data_iniSE)) +
@@ -56,13 +64,13 @@ run_inla_model <- function(trashold_week, formula) {
     geom_line(aes(y = predicted_cases, color = "fitted"),
               linetype = "dashed", linewidth = 1) +
     
-    geom_vline(xintercept = data_inla$data_iniSE[i], linetype = "dashed", 
+    geom_vline(xintercept = data_inla$data_iniSE[trashold_week], linetype = "dashed", 
                color = "black", linewidth = 1.5) +
     
     scale_fill_manual(name = "", values = c("counting" = "#9ecae1",
                                             "CI" = "gray70"),
                       labels = c("counting" = "Observed",
-                                 "CI" = "95% CI")
+                                 "CI" = "90% CI")
     ) +
     scale_color_manual(name = "", values = c("fitted" = "blue"),
                        labels = c("Fitted")) +
@@ -82,10 +90,22 @@ run_inla_model <- function(trashold_week, formula) {
   return(list(fit = fit, plot = plot))
 }
 
+quantiles <- c(0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95)
+# Model 1
 f1 <- casprov ~ 1 + 
     tempmed + umidmed +
-    f(time_id, model = "rw1")
+    f(obs_id, model = "rw1") 
 
-result_M1 <- transpose(lapply(111:(nrow(dengue_climate_rj) - 3), function(i) {
-  run_inla_model(i, f1)
+results_M1 <- transpose(lapply(111:(nrow(dengue_climate_rj) - 3), function(i) {
+  run_inla_model(i, f1, quantiles)
 }))
+saveRDS(results_M1, file = "results/results_M1.rds")
+
+# Model 2
+f2 <- casprov ~ 1 + 
+    tempmed_lag5 + umidmed_lag8 +
+    f(obs_id, model = "rw1")
+results_M2 <- transpose(lapply(111:(nrow(dengue_climate_rj) - 3), function(i) {
+  run_inla_model(i, f2, quantiles)
+}))
+saveRDS(results_M2, file = "results/results_M2.rds")
