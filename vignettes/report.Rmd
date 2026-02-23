@@ -98,3 +98,38 @@ ccf_precip <- ccf(diff(dengue_climate_rj$casprov), diff(dengue_climate_rj$precip
 ```
 
 # Fitting Models
+
+## Model 1
+
+For each observed case $Y_i$, we assume a Negative Binomial distribution with mean $\mu_i$ and dispersion parameter $\theta$:
+$$Y_i \sim \text{NegBin}(\mu_i, \theta).$$
+The mean $\mu_i$ is modeled as a function of the covariates using a log link function:
+$$
+\begin{align*}
+\log(\mu_i) &= \beta_0 + \beta_1 \cdot \text{tempmed}_i + \beta_2 \cdot \text{umidmed}_i + u_i, 
+\\
+u_i &\sim \text{RW1}(\sigma^2_u).
+\end{align*}
+$$
+
+![Predictions for each window - Model 1](figures/plot_pred_M1.png)
+
+## Model 2
+
+We change the model 1 by including lagged effects of the covariates:
+$$
+\begin{align*}
+\log(\mu_i) &= \beta_0 + \beta_1 \cdot \text{tempmed}_{i-5} + \beta_3 \cdot \text{umidmed}_{i-8} + u_i,
+\\
+u_i &\sim \text{RW1}(\sigma^2_u).
+\end{align*}
+$$
+
+![Predictions for each window - Model 2](figures/plot_pred_M2.png)
+
+## Model Comparison Results
+
+```{r summary, echo = F, message = FALSE, warning = FALSE}
+summary_results <- read_csv("../results/summary_results.csv")
+knitr::kable(summary_results, caption = "Model Comparison Results", digits = 2)
+```

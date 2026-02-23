@@ -23,6 +23,8 @@ dengue_climate_rj$week_id <- as.numeric(substr(dengue_climate_rj$epiweek, 5, 6))
 dengue_climate_rj$time_id <- as.numeric(factor(dengue_climate_rj$epiweek))
 dengue_climate_rj$year_id <- as.numeric(factor(dengue_climate_rj$year))
 dengue_climate_rj$obs_id <- 1:nrow(dengue_climate_rj) 
+row.names(dengue_climate_rj) <- dengue_climate_rj$obs_id
+write.csv(dengue_climate_rj, "data/dengue_climate_rj.csv", row.names = FALSE)
 
 run_inla_model <- function(trashold_week, formula, quantiles = c(0.025, 0.975)) {
   train_data <- dengue_climate_rj[dengue_climate_rj$epiweek <= dengue_climate_rj$epiweek[trashold_week], ]
@@ -40,7 +42,8 @@ run_inla_model <- function(trashold_week, formula, quantiles = c(0.025, 0.975)) 
                                         quantiles = quantiles
                                         ),
                control.compute = list(dic = TRUE, 
-                                      waic = TRUE
+                                      waic = TRUE,
+                                      cpo = TRUE
                                     )
   )
   
