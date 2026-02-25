@@ -23,5 +23,5 @@ climate_rj = mosqlient.get_climate(
 )
 
 # saving the dataframes as csv files
-dengue_rj.to_csv("data/dengue_rj.csv", index=False)
-climate_rj.to_csv("data/climate_rj.csv", index=False)
+dengue_rj.to_csv("data/rio_de_janeiro/dengue_rj.csv", index=False)
+climate_rj.to_csv("data/rio_de_janeiro/climate_rj.csv", index=False)
