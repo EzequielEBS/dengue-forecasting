@@ -1,0 +1,106 @@
+---
+title: "Dengue Forecasting in Joinville"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{var_sel}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(corrplot)
+knitr::opts_chunk$set(
+  collapse = TRUE
+)
+dengue_climate_joinville <- read_csv(here::here("data", "joinville", "dengue_climate_joinville_inla.csv"))
+```
+
+# Exploratory Data Analysis
+
+## Time Series of Dengue Cases
+```{r eda_dengue, echo = TRUE}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = casprov), color = "red") +
+  geom_line(aes(y = casos), color = "blue") +
+  labs(title = "", x = "Epidemiological Week", y = "Number of Cases") + 
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        legend.position = "top")
+```
+
+## Time Series of Temperature
+```{r eda_temp, echo = TRUE}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_med_avg)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Temperature (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+## Time Series of Humidity
+
+```{r eda_humidity, echo = TRUE}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = umid_med_avg)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Humidity (%)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+## Time Series of Precipitation
+
+```{r eda_precip, echo = TRUE}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = precip_total)) +
+  labs(title = "", x = "Epidemiological Week", y = "Total Precipitation (mm)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+# Correlation Analysis
+
+```{r correlation_analysis, echo = TRUE}
+# Select relevant columns for correlation analysis
+correlation_data <- dengue_climate_joinville %>%
+  select(temp_med_avg, umid_med_avg, precip_total)
+# Calculate the correlation matrix
+cor_matrix <- cor(correlation_data, use = "complete.obs")
+# Visualize the correlation matrix
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+```
+
+## Autocorrelation analysis
+
+```{r acf_analysis, echo = TRUE}
+acf(dengue_climate_joinville$casos, main = "ACF of Dengue Cases")
+acf(dengue_climate_joinville$temp_med_avg, main = "ACF of Average Temperature")
+acf(dengue_climate_joinville$umid_med_avg, main = "ACF of Average Humidity")
+acf(dengue_climate_joinville$precip_total, main = "ACF of Total Precipitation")
+```
+
+## Lagged Correlation Analysis
+
+```{r lagged_correlation, echo = TRUE}
+ccf(diff(dengue_climate_joinville$casos), 
+    diff(dengue_climate_joinville$temp_med_avg), 
+    main = "CCF of Differenced Dengue Cases and Temperature")
+ccf(diff(dengue_climate_joinville$casos), 
+    dengue_climate_joinville$umid_med_avg, 
+    main = "CCF of Differenced Dengue Cases and Humidity")
+ccf(diff(dengue_climate_joinville$casos), 
+    dengue_climate_joinville$precip_total,
+    main = "CCF of Differenced Dengue Cases and Precipitation")
+```
