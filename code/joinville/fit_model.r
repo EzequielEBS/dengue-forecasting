@@ -8,17 +8,26 @@ source("code/aux_func.r")
 # Load the data
 dengue_climate_joinville <- read_csv("data/joinville/dengue_climate_joinville_inla.csv")
 
+# temp_avg_8w
+# temp_min_avg_8w 
+# temp_max_avg_8w
+# temp_avg_12w
+# temp_min_avg_12w
+# temp_max_avg_12w
+
 # Model 1 
 f1 <- casos ~ 1 + 
-    temp_avg_4w + umid_avg_4w +
+    temp_avg_8w + 
     f(time_id, model = "rw1") +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))   
 family1 <- "poisson"
 
 quantiles <- c(0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95)
-results_M1 <- transpose(lapply(261:(nrow(dengue_climate_joinville) - 3), function(i) {
+start_week <- 255
+results_M1 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
+                        outcome = "casos",
                         trashold_week = i, 
                         formula = f1, 
                         family = family1,
@@ -30,13 +39,14 @@ saveRDS(results_M1, file = "results/joinville/results_M1.rds")
 
 # Model 2
 f2 <- casos ~ 1 + 
-    temp_above_25 + 
+    temp_min_avg_8w + 
     f(time_id, model = "rw1") +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family2 <- "poisson"
-results_M2 <- transpose(lapply(261:(nrow(dengue_climate_joinville) - 3), function(i) {
-  fit <- run_inla_model(dengue_climate_joinville, 
+results_M2 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  fit <- run_inla_model(dengue_climate_joinville,
+                        outcome = "casos", 
                         trashold_week = i, 
                         formula = f2, 
                         family = family2,
@@ -48,13 +58,14 @@ saveRDS(results_M2, file = "results/joinville/results_M2.rds")
 
 # Model 3
 f3 <- casos ~ 1 + 
-    temp_med_sd_4w + umid_med_sd_4w +
+    temp_max_avg_8w +
     f(time_id, model = "rw1") +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family3 <- "poisson"
-results_M3 <- transpose(lapply(261:(nrow(dengue_climate_joinville) - 3), function(i) {
-  fit <- run_inla_model(dengue_climate_joinville, 
+results_M3 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  fit <- run_inla_model(dengue_climate_joinville,
+                        outcome = "casos", 
                         trashold_week = i, 
                         formula = f3, 
                         family = family3,
@@ -66,13 +77,14 @@ saveRDS(results_M3, file = "results/joinville/results_M3.rds")
 
 # Model 4
 f4 <- casos ~ 1 + 
-    temp_med_range_4w +
+    temp_avg_12w +
     f(time_id, model = "rw1") +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family4 <- "poisson"
-results_M4 <- transpose(lapply(261:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M4 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
+                        outcome = "casos",
                         trashold_week = i, 
                         formula = f4, 
                         family = family4,
@@ -81,3 +93,43 @@ results_M4 <- transpose(lapply(261:(nrow(dengue_climate_joinville) - 3), functio
   return(fit)
 }))
 saveRDS(results_M4, file = "results/joinville/results_M4.rds")
+
+# Model 5
+f5 <- casos ~ 1 + 
+    temp_min_avg_12w +
+    f(time_id, model = "rw1") +
+    f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
+      group = year_id, control.group = list(model = "ar1"))
+family5 <- "poisson"
+results_M5 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  fit <- run_inla_model(dengue_climate_joinville, 
+                        outcome = "casos",
+                        trashold_week = i, 
+                        formula = f5, 
+                        family = family5,
+                        quantiles = quantiles
+                      )
+  return(fit)
+}))
+
+saveRDS(results_M5, file = "results/joinville/results_M5.rds")
+
+# Model 6
+f6 <- casos ~ 1 + 
+    temp_max_avg_12w +
+    f(time_id, model = "rw1") +
+    f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
+      group = year_id, control.group = list(model = "ar1"))
+family6 <- "poisson"
+results_M6 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  fit <- run_inla_model(dengue_climate_joinville, 
+                        outcome = "casos",
+                        trashold_week = i, 
+                        formula = f6, 
+                        family = family6,
+                        quantiles = quantiles
+                      )
+  return(fit)
+}))
+
+saveRDS(results_M6, file = "results/joinville/results_M6.rds")

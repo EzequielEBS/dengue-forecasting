@@ -15,12 +15,33 @@ knitr::opts_chunk$set(
   collapse = TRUE
 )
 dengue_climate_joinville <- read_csv(here::here("data", "joinville", "dengue_climate_joinville_inla.csv"))
+
+plots_pred_M1 <- readRDS(here::here("results", "joinville", "plots_pred_M1.rds"))
+plots_pred_M2 <- readRDS(here::here("results", "joinville", "plots_pred_M2.rds"))
+plots_pred_M3 <- readRDS(here::here("results", "joinville", "plots_pred_M3.rds"))
+plots_pred_M4 <- readRDS(here::here("results", "joinville", "plots_pred_M4.rds"))
+plots_pred_M5 <- readRDS(here::here("results", "joinville", "plots_pred_M5.rds"))
+plots_pred_M6 <- readRDS(here::here("results", "joinville", "plots_pred_M6.rds"))
+
+plots_time_effect_M1 <- readRDS(here::here("results", "joinville", "plots_time_effect_M1.rds"))
+plots_time_effect_M2 <- readRDS(here::here("results", "joinville", "plots_time_effect_M2.rds"))
+plots_time_effect_M3 <- readRDS(here::here("results", "joinville", "plots_time_effect_M3.rds"))
+plots_time_effect_M4 <- readRDS(here::here("results", "joinville", "plots_time_effect_M4.rds"))
+plots_time_effect_M5 <- readRDS(here::here("results", "joinville", "plots_time_effect_M5.rds"))
+plots_time_effect_M6 <- readRDS(here::here("results", "joinville", "plots_time_effect_M6.rds"))
+
+plots_week_effect_M1 <- readRDS(here::here("results", "joinville", "plots_week_effect_M1.rds"))
+plots_week_effect_M2 <- readRDS(here::here("results", "joinville", "plots_week_effect_M2.rds"))
+plots_week_effect_M3 <- readRDS(here::here("results", "joinville", "plots_week_effect_M3.rds"))
+plots_week_effect_M4 <- readRDS(here::here("results", "joinville", "plots_week_effect_M4.rds"))
+plots_week_effect_M5 <- readRDS(here::here("results", "joinville", "plots_week_effect_M5.rds"))
+plots_week_effect_M6 <- readRDS(here::here("results", "joinville", "plots_week_effect_M6.rds"))
 ```
 
 # Exploratory Data Analysis
 
 ## Time Series of Dengue Cases
-```{r eda_dengue, echo = TRUE}
+```{r eda_dengue, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
   geom_line(aes(y = casprov), color = "red") +
   geom_line(aes(y = casos), color = "blue") +
@@ -33,7 +54,7 @@ ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
 ```
 
 ## Time Series of Temperature
-```{r eda_temp, echo = TRUE}
+```{r time_series_temp, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
   geom_line(aes(y = temp_med_avg)) +
   labs(title = "", x = "Epidemiological Week", y = "Average Temperature (°C)") +
@@ -44,12 +65,12 @@ ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
         )
 ```
 
-## Time Series of Humidity
+## Time Series of Average temperature in the previous week
 
-```{r eda_humidity, echo = TRUE}
+```{r time_series_temp_8w, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
-  geom_line(aes(y = umid_med_avg)) +
-  labs(title = "", x = "Epidemiological Week", y = "Average Humidity (%)") +
+  geom_line(aes(y = temp_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Temperature in the Previous 8 Weeks (°C)") +
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -57,12 +78,54 @@ ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
         )
 ```
 
-## Time Series of Precipitation
-
-```{r eda_precip, echo = TRUE}
+```{r time_series_temp_min_8w, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
-  geom_line(aes(y = precip_total)) +
-  labs(title = "", x = "Epidemiological Week", y = "Total Precipitation (mm)") +
+  geom_line(aes(y = temp_min_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Minimum Temperature in the Previous 8 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+```{r time_series_temp_max_8w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_max_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Maximum Temperature in the Previous 8 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+```{r time_series_temp_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Temperature in the Previous 12 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+``` 
+
+```{r time_series_temp_min_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_min_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Minimum Temperature in the Previous 12 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+```
+
+```{r time_series_temp_max_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_max_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Maximum Temperature in the Previous 12 Weeks (°C)") +
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -72,35 +135,115 @@ ggplot(dengue_climate_joinville, aes(x = data_iniSE)) +
 
 # Correlation Analysis
 
-```{r correlation_analysis, echo = TRUE}
+```{r correlation_analysis, echo = TRUE, fig.width=14, fig.height=6}
 # Select relevant columns for correlation analysis
 correlation_data <- dengue_climate_joinville %>%
-  select(temp_med_avg, umid_med_avg, precip_total)
+  select(casos, temp_med_avg, temp_avg_8w, temp_min_avg_8w, temp_max_avg_8w, temp_avg_12w, temp_min_avg_12w, temp_max_avg_12w)
 # Calculate the correlation matrix
 cor_matrix <- cor(correlation_data, use = "complete.obs")
 # Visualize the correlation matrix
 corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
 ```
 
-## Autocorrelation analysis
+# Fitted Models
 
-```{r acf_analysis, echo = TRUE}
-acf(dengue_climate_joinville$casos, main = "ACF of Dengue Cases")
-acf(dengue_climate_joinville$temp_med_avg, main = "ACF of Average Temperature")
-acf(dengue_climate_joinville$umid_med_avg, main = "ACF of Average Humidity")
-acf(dengue_climate_joinville$precip_total, main = "ACF of Total Precipitation")
+- Initial period: 2020-W09 to 2025-W01
+- In all models, for each response variable $Y_t$, we assume a Poisson distribution with mean $\lambda_t$ and log link function, and we include a random walk of order 1 in the time observations, with cyclic effect for the epidemiological week and an AR(1) structure for the year, as follows:
+
+\begin{align*}
+Y_t &\sim \text{Poisson}(\lambda_t), \\
+\log(\lambda_t) &= \beta_0 + \beta_1 X_{t} + u_t + v_t(\text{week}_t, \text{year}_t) \\
+u_t &\sim \text{RW1}(\sigma^2_u), \\
+\end{align*}
+
+where for a fixed year $y$, 
+\begin{align*}
+v_t(\text{week}_t, y) &\sim \text{RW1}(\sigma^2_w), \\
+v_t(1, y) - v_t(52, y) &\sim \text{Normal}(0, \sigma^2_w),
+\end{align*}
+and for a fixed epidemiological week $w$,
+\begin{align*}
+v_t(w, \text{year}_t) &\sim \text{AR1}(\rho, \sigma^2_y).
+\end{align*}
+
+## Model 1: Average temperature in the previous 8 weeks
+
+- $X_t = \text{temp\_avg\_8w}_t$.
+
+```{r model_1, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M1[[length(plots_pred_M1)]])
+print(plots_time_effect_M1[[length(plots_time_effect_M1)]])
+print(plots_week_effect_M1[[length(plots_week_effect_M1)]])
 ```
 
-## Lagged Correlation Analysis
+![](figures/coef_M1.png)
 
-```{r lagged_correlation, echo = TRUE}
-ccf(diff(dengue_climate_joinville$casos), 
-    diff(dengue_climate_joinville$temp_med_avg), 
-    main = "CCF of Differenced Dengue Cases and Temperature")
-ccf(diff(dengue_climate_joinville$casos), 
-    dengue_climate_joinville$umid_med_avg, 
-    main = "CCF of Differenced Dengue Cases and Humidity")
-ccf(diff(dengue_climate_joinville$casos), 
-    dengue_climate_joinville$precip_total,
-    main = "CCF of Differenced Dengue Cases and Precipitation")
+## Model 2: Average minimum temperature in the previous 8 weeks
+
+- $X_t = \text{temp\_min\_avg\_8w}_t$.
+```{r model_2, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M2[[length(plots_pred_M2)]])
+print(plots_time_effect_M2[[length(plots_time_effect_M2)]])
+print(plots_week_effect_M2[[length(plots_week_effect_M2)]])
+```
+
+![](figures/coef_M2.png)
+
+## Model 3: Average maximum temperature in the previous 8 weeks
+- $X_t = \text{temp\_max\_avg\_8w}_t$.
+```{r model_3, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M3[[length(plots_pred_M3)]])
+print(plots_time_effect_M3[[length(plots_time_effect_M3)]])
+print(plots_week_effect_M3[[length(plots_week_effect_M3)]])
+```
+
+![](figures/coef_M3.png)
+
+## Model 4: Average temperature in the previous 12 weeks
+- $X_t = \text{temp\_avg\_12w}_t$
+```{r model_4, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M4[[length(plots_pred_M4)]])
+print(plots_time_effect_M4[[length(plots_time_effect_M4)]])
+print(plots_week_effect_M4[[length(plots_week_effect_M4)]])
+```
+
+![](figures/coef_M4.png)
+
+## Model 5: Average minimum temperature in the previous 12 weeks
+- $X_t = \text{temp\_min\_avg\_12w}_t$
+```{r model_5, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M5[[length(plots_pred_M5)]])
+print(plots_time_effect_M5[[length(plots_time_effect_M5)]])
+print(plots_week_effect_M5[[length(plots_week_effect_M5)]])
+```
+
+![](figures/coef_M5.png)
+
+## Model 6: Average maximum temperature in the previous 12 weeks
+- $X_t = \text{temp\_max\_avg\_12w}_t$
+```{r model_6, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M6[[length(plots_pred_M6)]])
+print(plots_time_effect_M6[[length(plots_time_effect_M6)]])
+print(plots_week_effect_M6[[length(plots_week_effect_M6)]])
+```
+
+![](figures/coef_M6.png)
+
+# Model Comparison
+
+```{r mae_id, echo = F, message = FALSE, warning = FALSE}
+here::here("results", "joinville", "mae_by_id.csv") %>%
+  read_csv() %>%
+  knitr::kable(caption = "MAE by Model and Time Window", digits = 2)
+```
+
+```{r mae_by_window, echo = F, message = FALSE, warning = FALSE}
+here::here("results", "joinville", "mae_by_window.csv") %>%
+  read_csv() %>%
+  knitr::kable(caption = "MAE by Time Window", digits = 2)
+```
+
+```{r summary_results, echo = F, message = FALSE, warning = FALSE}
+summary_results <- read_csv(here::here("results", "joinville", "summary_metrics.csv"))
+knitr::kable(summary_results, caption = "Model Comparison Results", digits = 2)
 ```

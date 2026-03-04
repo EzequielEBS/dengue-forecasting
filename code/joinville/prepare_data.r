@@ -3,7 +3,7 @@ library(slider)
 
 dengue_climate_joinville <- read_csv(here::here("data", "joinville", "dengue_climate_joinville.csv"))
 
-# Calculate the 4-week average for temp_med, umid_med, and precip_total
+# Calculate the 4-week 
 dengue_climate_joinville <- dengue_climate_joinville %>%
   arrange(epiweek) %>%
   mutate(temp_avg_4w = slide_dbl(
@@ -12,54 +12,144 @@ dengue_climate_joinville <- dengue_climate_joinville %>%
     .before = 4,   # look 4 steps back
     .after = -1,   # exclude current week
     .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
-
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  arrange(epiweek) %>%
-  mutate(umid_avg_4w = slide_dbl(
+  ),
+  umid_avg_4w = slide_dbl(
     umid_med_avg,
     mean,
     .before = 4,   # look 4 steps back
     .after = -1,   # exclude current week
     .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
-
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  arrange(epiweek) %>%
-  mutate(precip_avg_4w = slide_dbl(
-    precip_total,
+  ),
+  temp_min_avg_4w = slide_dbl(
+    temp_min_avg,
     mean,
     .before = 4,   # look 4 steps back
     .after = -1,   # exclude current week
     .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
+  ),
+  temp_max_avg_4w = slide_dbl(
+    temp_max_avg,
+    mean,
+    .before = 4,   # look 4 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 4 observations
+  ),
+  umid_min_avg_4w = slide_dbl(
+    umid_min_avg,
+    mean,
+    .before = 4,   # look 4 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 4 observations
+  ),
+  umid_max_avg_4w = slide_dbl(
+    umid_max_avg,
+    mean,
+    .before = 4,   # look 4 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 4 observations
+  )
+  )
+
+# calculate the 8-week
+dengue_climate_joinville <- dengue_climate_joinville %>%
+  arrange(epiweek) %>%
+  mutate(temp_avg_8w = slide_dbl(
+    temp_med_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  ),
+  umid_avg_8w = slide_dbl(
+    umid_med_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  ),
+  temp_min_avg_8w = slide_dbl(
+    temp_min_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  ),
+  temp_max_avg_8w = slide_dbl(
+    temp_max_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  ),
+  umid_min_avg_8w = slide_dbl(
+    umid_min_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  ),
+  umid_max_avg_8w = slide_dbl(
+    umid_max_avg,
+    mean,
+    .before = 8,   # look 8 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 8 observations
+  )
+  )
+
+# calculate the 12-week
+dengue_climate_joinville <- dengue_climate_joinville %>%
+  arrange(epiweek) %>%
+  mutate(temp_avg_12w = slide_dbl(
+    temp_med_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  ),
+  umid_avg_12w = slide_dbl(
+    umid_med_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  ),
+  temp_min_avg_12w = slide_dbl(
+    temp_min_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  ),
+  temp_max_avg_12w = slide_dbl(
+    temp_max_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  ),
+  umid_min_avg_12w = slide_dbl(
+    umid_min_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  ),
+  umid_max_avg_12w = slide_dbl(
+    umid_max_avg,
+    mean,
+    .before = 12,   # look 12 steps back
+    .after = -1,   # exclude current week
+    .complete = TRUE  # returns NA if fewer than 12 observations
+  )
+  )
+
 
 # create trashold temp_med_avg
 dengue_climate_joinville <- dengue_climate_joinville %>%
   arrange(epiweek) %>%
-  mutate(temp_above_25 = pmax(temp_med_avg - 25, 0),
-         temp_below_25 = pmin(temp_med_avg, 25)
+  mutate(temp_above_25 = pmax(temp_med_avg - 25, 0)
          )
-
-# compute variability of temp_med and umid_med in the last 4 weeks
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  arrange(epiweek) %>%
-  mutate(temp_med_sd_4w = slide_dbl(
-    temp_med_avg,
-    sd,
-    .before = 4,   # look 4 steps back
-    .after = -1,   # exclude current week
-    .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  arrange(epiweek) %>%
-  mutate(umid_med_sd_4w = slide_dbl(
-    umid_med_avg,
-    sd,
-    .before = 4,   # look 4 steps back
-    .after = -1,   # exclude current week
-    .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
 
 # compute range of temp_med and umid_med in the last 4 weeks
 dengue_climate_joinville <- dengue_climate_joinville %>%
@@ -70,10 +160,8 @@ dengue_climate_joinville <- dengue_climate_joinville %>%
     .before = 4,   # look 4 steps back
     .after = -1,   # exclude current week
     .complete = TRUE  # returns NA if fewer than 4 observations
-  ))
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  arrange(epiweek) %>%
-  mutate(umid_med_range_4w = slide_dbl(
+  ),
+  umid_med_range_4w = slide_dbl(
     umid_med_avg,
     ~ max(.x) - min(.x),
     .before = 4,   # look 4 steps back
@@ -96,20 +184,20 @@ dengue_climate_joinville <- dengue_climate_joinville %>%
 
 
 # remove rows with NA values (due to lag and rolling average)
-dengue_climate_joinville <- dengue_climate_joinville %>%
-  filter(!is.na(temp_avg_4w) & 
-          !is.na(umid_avg_4w) & 
-          !is.na(precip_avg_4w) &
-          !is.na(temp_med_lag1) &
-          !is.na(temp_med_lag2) &
-          !is.na(temp_med_lag3) &
-          !is.na(temp_med_lag4) &
-          !is.na(umid_med_lag1) &
-          !is.na(umid_med_lag2) &
-          !is.na(umid_med_lag3) &
-          !is.na(umid_med_lag4)
-         )
+dengue_climate_joinville <- dengue_climate_joinville[13:nrow(dengue_climate_joinville), ]
 
+# standardize the covariates
+dengue_climate_joinville <- dengue_climate_joinville %>%
+  mutate(across(c(temp_avg_4w, umid_avg_4w, temp_avg_8w, umid_avg_8w, temp_avg_12w, umid_avg_12w,
+                  temp_min_avg_4w, temp_max_avg_4w, umid_min_avg_4w, umid_max_avg_4w,
+                  temp_min_avg_8w, temp_max_avg_8w, umid_min_avg_8w, umid_max_avg_8w,
+                  temp_min_avg_12w, temp_max_avg_12w, umid_min_avg_12w, umid_max_avg_12w,
+                  temp_med_lag1, temp_med_lag2, temp_med_lag3, temp_med_lag4,
+                  umid_med_lag1, umid_med_lag2, umid_med_lag3, umid_med_lag4,
+                  temp_med_range_4w, umid_med_range_4w),
+                ~ (.x - mean(.x)) / sd(.x)
+                )
+         )
 
 # create ids for the INLA model
 dengue_climate_joinville <- dengue_climate_joinville %>%
