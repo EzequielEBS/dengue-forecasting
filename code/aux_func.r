@@ -98,7 +98,7 @@ compute_bcis <- function(fits) {
   do.call(rbind, bcis)
 }
 
-plot_coef <- function(bcis) {
+plot_coef <- function(bcis, cova = T) {
   plot_coefs <- ggplot(bcis %>% filter(!term %in% c("(Intercept)")),
         aes(x = window, y = mean, color = term)) +
   geom_line() +
@@ -122,7 +122,11 @@ plot_coef <- function(bcis) {
   theme_bw() +
   theme(legend.title = element_blank(),
         legend.position = "none") 
-  return(plot_inter + plot_coefs + plot_layout(guides = "collect"))
+  if (cova) {
+    return(plot_inter + plot_coefs + plot_layout(guides = "collect"))
+  } else {
+    return(plot_inter)
+  }
 }
 
 compute_wis <- function(fit, data, outcome, quantile_level) {

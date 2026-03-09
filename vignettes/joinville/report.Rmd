@@ -16,13 +16,16 @@ knitr::opts_chunk$set(
 )
 dengue_climate_joinville <- read_csv(here::here("data", "joinville", "dengue_climate_joinville_inla.csv"))
 
+plots_pred_M0 <- readRDS(here::here("results", "joinville", "plots_pred_M0.rds"))
 plots_pred_M1 <- readRDS(here::here("results", "joinville", "plots_pred_M1.rds"))
 plots_pred_M2 <- readRDS(here::here("results", "joinville", "plots_pred_M2.rds"))
 plots_pred_M3 <- readRDS(here::here("results", "joinville", "plots_pred_M3.rds"))
 plots_pred_M4 <- readRDS(here::here("results", "joinville", "plots_pred_M4.rds"))
 plots_pred_M5 <- readRDS(here::here("results", "joinville", "plots_pred_M5.rds"))
 plots_pred_M6 <- readRDS(here::here("results", "joinville", "plots_pred_M6.rds"))
+plots_pred_M7 <- readRDS(here::here("results", "joinville", "plots_pred_M7.rds"))
 
+plots_time_effect_M0 <- readRDS(here::here("results", "joinville", "plots_time_effect_M0.rds"))
 plots_time_effect_M1 <- readRDS(here::here("results", "joinville", "plots_time_effect_M1.rds"))
 plots_time_effect_M2 <- readRDS(here::here("results", "joinville", "plots_time_effect_M2.rds"))
 plots_time_effect_M3 <- readRDS(here::here("results", "joinville", "plots_time_effect_M3.rds"))
@@ -30,12 +33,16 @@ plots_time_effect_M4 <- readRDS(here::here("results", "joinville", "plots_time_e
 plots_time_effect_M5 <- readRDS(here::here("results", "joinville", "plots_time_effect_M5.rds"))
 plots_time_effect_M6 <- readRDS(here::here("results", "joinville", "plots_time_effect_M6.rds"))
 
+plots_week_effect_M0 <- readRDS(here::here("results", "joinville", "plots_week_effect_M0.rds"))
 plots_week_effect_M1 <- readRDS(here::here("results", "joinville", "plots_week_effect_M1.rds"))
 plots_week_effect_M2 <- readRDS(here::here("results", "joinville", "plots_week_effect_M2.rds"))
 plots_week_effect_M3 <- readRDS(here::here("results", "joinville", "plots_week_effect_M3.rds"))
 plots_week_effect_M4 <- readRDS(here::here("results", "joinville", "plots_week_effect_M4.rds"))
 plots_week_effect_M5 <- readRDS(here::here("results", "joinville", "plots_week_effect_M5.rds"))
 plots_week_effect_M6 <- readRDS(here::here("results", "joinville", "plots_week_effect_M6.rds"))
+plots_week_effect_M7 <- readRDS(here::here("results", "joinville", "plots_week_effect_M7.rds"))
+
+plots_year_effect_M7 <- readRDS(here::here("results", "joinville", "plots_year_effect_M7.rds"))
 ```
 
 # Exploratory Data Analysis
@@ -148,7 +155,7 @@ corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt 
 # Fitted Models
 
 - Initial period: 2020-W09 to 2025-W01
-- In all models, for each response variable $Y_t$, we assume a Poisson distribution with mean $\lambda_t$ and log link function, and we include a random walk of order 1 in the time observations, with cyclic effect for the epidemiological week and an AR(1) structure for the year, as follows:
+- From model 0 to model 7, for each response variable $Y_t$, we assume a Poisson distribution with mean $\lambda_t$ and log link function, and we include a random walk of order 1 in the time observations, with cyclic effect for the epidemiological week and an AR(1) structure for the year, as follows:
 
 \begin{align*}
 Y_t &\sim \text{Poisson}(\lambda_t), \\
@@ -165,6 +172,18 @@ and for a fixed epidemiological week $w$,
 \begin{align*}
 v_t(w, \text{year}_t) &\sim \text{AR1}(\rho, \sigma^2_y).
 \end{align*}
+
+## Model 0: Baseline model with no covariates
+
+- $X_t = 0$ for all $t$.
+
+```{r model_0, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M0[[length(plots_pred_M0)]])
+print(plots_time_effect_M0[[length(plots_time_effect_M0)]])
+print(plots_week_effect_M0[[length(plots_week_effect_M0)]])
+```
+
+![](figures/coef_M0.png)
 
 ## Model 1: Average temperature in the previous 8 weeks
 
@@ -228,6 +247,23 @@ print(plots_week_effect_M6[[length(plots_week_effect_M6)]])
 ```
 
 ![](figures/coef_M6.png)
+
+## Model 7: Leo's model
+
+\begin{align*}
+Y_t &\sim \text{Neg-Bin}(\lambda_t, \theta), \\
+\log(\lambda_t) &= \beta_0 + u_t(\text{week}_t) + v_t(\text{year}_t) \\
+u_t &\sim \text{RW2}(\sigma^2_u), \\
+v_t &\sim \text{Normal}(0, \sigma^2_v).
+\end{align*}
+
+```{r model_7, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M7[[length(plots_pred_M7)]])
+print(plots_week_effect_M7[[length(plots_week_effect_M7)]])
+print(plots_year_effect_M7[[length(plots_year_effect_M7)]])
+```
+
+![](figures/coef_M7.png)
 
 # Model Comparison
 
