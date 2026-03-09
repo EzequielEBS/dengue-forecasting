@@ -79,7 +79,7 @@ saveRDS(results_M3, file = "results/joinville/results_M3.rds")
 f4 <- casos ~ 1 + 
     temp_avg_12w +
     f(time_id, model = "rw1") +
-    f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
+    f(week_id, model = "rw1", constr = TRUE, cyclic = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family4 <- "poisson"
 results_M4 <- transpose(lapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
