@@ -13,7 +13,7 @@ dengue_rj = mosqlient.get_infodengue(
 dengue_joinville = mosqlient.get_infodengue(
   api_key = api_key, 
   disease =  "dengue", 
-  start_date = "2019-12-01", 
+  start_date = "2014-12-01", 
   end_date = "2026-02-28", 
   uf = "SC",
   geocode = 4209102
@@ -29,7 +29,7 @@ climate_rj = mosqlient.get_climate(
 
 climate_joinville = mosqlient.get_climate(
     api_key = api_key,
-    start_date = "2019-12-01",
+    start_date = "2014-12-01",
     end_date = "2026-02-28",
     uf = "SC",
     geocode = 4209102

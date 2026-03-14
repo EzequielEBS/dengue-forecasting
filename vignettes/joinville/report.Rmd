@@ -24,6 +24,7 @@ plots_pred_M4 <- readRDS(here::here("results", "joinville", "plots_pred_M4.rds")
 plots_pred_M5 <- readRDS(here::here("results", "joinville", "plots_pred_M5.rds"))
 plots_pred_M6 <- readRDS(here::here("results", "joinville", "plots_pred_M6.rds"))
 plots_pred_M7 <- readRDS(here::here("results", "joinville", "plots_pred_M7.rds"))
+plots_pred_M8 <- readRDS(here::here("results", "joinville", "plots_pred_M8.rds"))
 
 plots_time_effect_M0 <- readRDS(here::here("results", "joinville", "plots_time_effect_M0.rds"))
 plots_time_effect_M1 <- readRDS(here::here("results", "joinville", "plots_time_effect_M1.rds"))
@@ -154,7 +155,7 @@ corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt 
 
 # Fitted Models
 
-- Initial period: 2020-W09 to 2025-W01
+- Initial period: 2015-W09 to 2025-W01
 - From model 0 to model 7, for each response variable $Y_t$, we assume a Poisson distribution with mean $\lambda_t$ and log link function, and we include a random walk of order 1 in the time observations, with cyclic effect for the epidemiological week and an AR(1) structure for the year, as follows:
 
 \begin{align*}
@@ -264,6 +265,19 @@ print(plots_year_effect_M7[[length(plots_year_effect_M7)]])
 ```
 
 ![](figures/coef_M7.png)
+
+# Model 8: AR(10)
+
+- First step: transform the response variable by taking the logarithm of the observed cases plus one, i.e., $Y_t = \log(\text{casos}_t + 1)$.
+- Second step: fit an AR(10) model to the transformed response variable, i.e.,
+\begin{align*}
+Y_t &= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2).
+\end{align*}
+
+```{r model_8, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M8[[length(plots_pred_M8)]])
+```
 
 # Model Comparison
 

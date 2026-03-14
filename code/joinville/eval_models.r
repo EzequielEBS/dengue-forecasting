@@ -14,7 +14,8 @@ results_M4 <- readRDS("results/joinville/results_M4.rds")
 results_M5 <- readRDS("results/joinville/results_M5.rds")
 results_M6 <- readRDS("results/joinville/results_M6.rds")
 results_M7 <- readRDS("results/joinville/results_M7.rds")
-start_week <- 255
+results_M8 <- readRDS("results/joinville/results_M8.rds")
+start_week <- 514
 
 plots_M0 <- lapply(1:length(results_M0$data_inla), function(i) {
   plot_pred_by_window(results_M0$data_inla[[i]], trashold_week = start_week + (i - 1))
@@ -40,6 +41,9 @@ plots_M6 <- lapply(1:length(results_M6$data_inla), function(i) {
 plots_M7 <- lapply(1:length(results_M7$data_inla), function(i) {
   plot_pred_by_window(results_M7$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M8 <- lapply(1:length(results_M8), function(i) {
+  plot_pred_by_window(results_M8[[i]], trashold_week = start_week - (p+1) + (i - 1))
+})
 
 saveRDS(plots_M0, file = "results/joinville/plots_pred_M0.rds")
 saveRDS(plots_M1, file = "results/joinville/plots_pred_M1.rds")
@@ -49,6 +53,7 @@ saveRDS(plots_M4, file = "results/joinville/plots_pred_M4.rds")
 saveRDS(plots_M5, file = "results/joinville/plots_pred_M5.rds")
 saveRDS(plots_M6, file = "results/joinville/plots_pred_M6.rds")
 saveRDS(plots_M7, file = "results/joinville/plots_pred_M7.rds")
+saveRDS(plots_M8, file = "results/joinville/plots_pred_M8.rds")
 
 pred_M0 <- get_pred(results_M0$data_inla)
 pred_M1 <- get_pred(results_M1$data_inla)
@@ -58,6 +63,7 @@ pred_M4 <- get_pred(results_M4$data_inla)
 pred_M5 <- get_pred(results_M5$data_inla)
 pred_M6 <- get_pred(results_M6$data_inla)
 pred_M7 <- get_pred(results_M7$data_inla)
+pred_M8 <- get_pred(results_M8)
 
 bcis_M0 <- compute_bcis(results_M0$fit)
 bcis_M1 <- compute_bcis(results_M1$fit)
@@ -142,6 +148,12 @@ wis_M6 <- mean(sapply(results_M6$fit, compute_wis, quantile_level = quantiles,
                       data = dengue_climate_joinville, outcome = "casos"))
 wis_M7 <- mean(sapply(results_M7$fit, compute_wis, quantile_level = quantiles, 
                       data = dengue_climate_joinville, outcome = "casos"))
+wis_M8 <- mean(sapply(results_M8, function(pred) {
+  rows_filter <- grepl("^y_forecast", as.character(pred$variable))
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:6)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
 
 waic_M0 <- mean(sapply(results_M0$fit, function(fit) fit$waic$waic))
 waic_M1 <- mean(sapply(results_M1$fit, function(fit) fit$waic$waic))
@@ -151,6 +163,7 @@ waic_M4 <- mean(sapply(results_M4$fit, function(fit) fit$waic$waic))
 waic_M5 <- mean(sapply(results_M5$fit, function(fit) fit$waic$waic))
 waic_M6 <- mean(sapply(results_M6$fit, function(fit) fit$waic$waic))
 waic_M7 <- mean(sapply(results_M7$fit, function(fit) fit$waic$waic))
+waic_M8 <- NA 
 
 mae_id_M0 <- mae_by_col(pred_M0, "index")
 mae_id_M1 <- mae_by_col(pred_M1, "index")
@@ -160,6 +173,7 @@ mae_id_M4 <- mae_by_col(pred_M4, "index")
 mae_id_M5 <- mae_by_col(pred_M5, "index")
 mae_id_M6 <- mae_by_col(pred_M6, "index")
 mae_id_M7 <- mae_by_col(pred_M7, "index")
+mae_id_M8 <- mae_by_col(pred_M8, "index")
 
 mae_window_M0 <- mae_by_col(pred_M0, "window")
 mae_window_M1 <- mae_by_col(pred_M1, "window")
@@ -169,6 +183,7 @@ mae_window_M4 <- mae_by_col(pred_M4, "window")
 mae_window_M5 <- mae_by_col(pred_M5, "window")
 mae_window_M6 <- mae_by_col(pred_M6, "window")
 mae_window_M7 <- mae_by_col(pred_M7, "window")
+mae_window_M8 <- mae_by_col(pred_M8, "window")
 
 mae_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases))
 mae_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases))
@@ -178,6 +193,7 @@ mae_M4 <- mean(abs(pred_M4$obs - pred_M4$predicted_cases))
 mae_M5 <- mean(abs(pred_M5$obs - pred_M5$predicted_cases))
 mae_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases))
 mae_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases))
+mae_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases))
 
 mae_id <- rbind(
   cbind(model = "M0", mae_id_M0),
@@ -187,7 +203,8 @@ mae_id <- rbind(
   cbind(model = "M4", mae_id_M4),
   cbind(model = "M5", mae_id_M5),
   cbind(model = "M6", mae_id_M6),
-  cbind(model = "M7", mae_id_M7)
+  cbind(model = "M7", mae_id_M7),
+  cbind(model = "M8", mae_id_M8)
 ) %>%
   pivot_wider(
     names_from = model,
@@ -204,7 +221,8 @@ mae_window <- rbind(
   cbind(model = "M4", mae_window_M4),
   cbind(model = "M5", mae_window_M5),
   cbind(model = "M6", mae_window_M6),
-  cbind(model = "M7", mae_window_M7)
+  cbind(model = "M7", mae_window_M7),
+  cbind(model = "M8", mae_window_M8)
 ) %>%
   pivot_wider(
     names_from = model,
@@ -214,9 +232,9 @@ mae_window <- rbind(
   write_csv("results/joinville/mae_by_window.csv")
 
 summary_metrics <- data.frame(
-  model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7"),
-  wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7),
-  waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7),
-  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7)
+  model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8"),
+  wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8),
+  waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8),
+  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8)
 ) %>%
   write_csv("results/joinville/summary_metrics.csv")

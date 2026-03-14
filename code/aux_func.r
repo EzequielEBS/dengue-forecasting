@@ -173,3 +173,90 @@ plot_random_effects <- function(fit, name, name_group = NULL){
   }
   return(plot)
 }
+
+run_ar <- function(p) {
+  cl <- makeCluster(15)
+  clusterExport(cl, varlist = c("dengue_climate_joinville", 
+                                "ar_p", 
+                                "p", 
+                                "start_week",
+                                "quantiles"
+                              ),
+                envir = environment())
+
+  clusterEvalQ(cl, {
+    library(posterior)
+    library(dplyr)
+    library(tidyr)
+  })
+  pred_window <- parLapply(cl, start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+    y <- log(dengue_climate_joinville[dengue_climate_joinville$time_id < i, "casos"]$casos + 1)
+    X <- embed(y, p + 1)
+    
+    standata <- list(
+      N = nrow(X),
+      p = p,
+      y = X[,1],
+      X = X[,-1, drop = FALSE],
+      H = 3
+    )
+    
+    fit <- ar_p$sample(
+      data = standata,
+      chains = 4,
+      # parallel_chains = 4,
+      iter_warmup = 1000,
+      iter_sampling = 2500
+    )
+    
+    pred <- ar_p$generate_quantities(
+      fit,
+      data = standata,
+      parallel_chains = 4
+    )
+    
+    pred_insample <- posterior::as_draws_df(pred$draws("y_rep"))
+    pred_insample <- pred_insample |>
+      dplyr::mutate(dplyr::across(dplyr::starts_with("y_rep"), ~ exp(.x) - 1)) |> 
+      dplyr::select(-.chain, -.iteration, -.draw)
+    pred_outsample <- posterior::as_draws_df(pred$draws("y_forecast"))
+    pred_outsample <- pred_outsample |>
+      dplyr::mutate(dplyr::across(dplyr::starts_with("y_forecast"), ~ exp(.x) - 1)) |> 
+      dplyr::select(-.chain, -.iteration, -.draw)
+    
+    pred <- cbind(pred_insample, pred_outsample)
+
+    col_order <- colnames(pred)
+
+    pred_summ <- pred |>
+      pivot_longer(cols = everything(),
+                  names_to = "variable",
+                  values_to = "y") |>
+      mutate(variable = factor(variable, levels = col_order)) |>
+      group_by(variable) |>
+      summarise(
+        mean  = mean(y),
+        lower_ci = quantile(y, quantiles[1]),
+        upper_ci = quantile(y, quantiles[length(quantiles)]),
+        .groups = "drop"
+      )
+    
+    quant <- apply(pred, 2, function(col) {
+      quantile(col, probs = quantiles)
+    })
+    quant <- quant %>%
+      t() %>%
+      as.data.frame()
+    colnames(quant) <- paste0(quantiles, "quant")
+    data <- dengue_climate_joinville %>%
+      filter(time_id > p & time_id < i + 3) %>%
+      select(data_iniSE, casos) %>%
+      cbind(pred_summ) %>%
+      cbind(quant) %>%
+      rename(obs = casos,
+              predicted_cases = mean)
+    return(data)
+  })
+  stopCluster(cl)
+  return(pred_window)
+}

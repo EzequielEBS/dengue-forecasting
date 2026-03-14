@@ -53,3 +53,5 @@ rsconnect/
 
 # Others
 \results
+*.exe
+*.html
