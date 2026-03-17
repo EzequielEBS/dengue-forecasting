@@ -15,34 +15,80 @@ results_M5 <- readRDS("results/joinville/results_M5.rds")
 results_M6 <- readRDS("results/joinville/results_M6.rds")
 results_M7 <- readRDS("results/joinville/results_M7.rds")
 results_M8 <- readRDS("results/joinville/results_M8.rds")
+results_M9 <- readRDS("results/joinville/results_M9.rds")
 start_week <- 514
 
 plots_M0 <- lapply(1:length(results_M0$data_inla), function(i) {
   plot_pred_by_window(results_M0$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M0_zoom <- lapply(1:length(results_M0$data_inla), function(i) {
+  data_i <- results_M0$data_inla[[i]] |> filter(data_iniSE >= results_M0$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
 plots_M1 <- lapply(1:length(results_M1$data_inla), function(i) {
   plot_pred_by_window(results_M1$data_inla[[i]], trashold_week = start_week + (i - 1))
+})
+plots_M1_zoom <- lapply(1:length(results_M1$data_inla), function(i) {
+  data_i <- results_M1$data_inla[[i]] |> filter(data_iniSE >= results_M1$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
 })
 plots_M2 <- lapply(1:length(results_M2$data_inla), function(i) {
   plot_pred_by_window(results_M2$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M2_zoom <- lapply(1:length(results_M2$data_inla), function(i) {
+  data_i <- results_M2$data_inla[[i]] |> filter(data_iniSE >= results_M2$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
 plots_M3 <- lapply(1:length(results_M3$data_inla), function(i) {
   plot_pred_by_window(results_M3$data_inla[[i]], trashold_week = start_week + (i - 1))
+})
+plots_M3_zoom <- lapply(1:length(results_M3$data_inla), function(i) {
+  data_i <- results_M3$data_inla[[i]] |> filter(data_iniSE >= results_M3$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
 })
 plots_M4 <- lapply(1:length(results_M4$data_inla), function(i) {
   plot_pred_by_window(results_M4$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M4_zoom <- lapply(1:length(results_M4$data_inla), function(i) {
+  data_i <- results_M4$data_inla[[i]] |> filter(data_iniSE >= results_M4$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
 plots_M5 <- lapply(1:length(results_M5$data_inla), function(i) {
   plot_pred_by_window(results_M5$data_inla[[i]], trashold_week = start_week + (i - 1))
+})
+plots_M5_zoom <- lapply(1:length(results_M5$data_inla), function(i) {
+  data_i <- results_M5$data_inla[[i]] |> filter(data_iniSE >= results_M5$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
 })
 plots_M6 <- lapply(1:length(results_M6$data_inla), function(i) {
   plot_pred_by_window(results_M6$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M6_zoom <- lapply(1:length(results_M6$data_inla), function(i) {
+  data_i <- results_M6$data_inla[[i]] |> filter(data_iniSE >= results_M6$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
 plots_M7 <- lapply(1:length(results_M7$data_inla), function(i) {
   plot_pred_by_window(results_M7$data_inla[[i]], trashold_week = start_week + (i - 1))
 })
+plots_M7_zoom <- lapply(1:length(results_M7$data_inla), function(i) {
+  data_i <- results_M7$data_inla[[i]] |> filter(data_iniSE >= results_M7$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
+p <- 10
 plots_M8 <- lapply(1:length(results_M8), function(i) {
   plot_pred_by_window(results_M8[[i]], trashold_week = start_week - (p+1) + (i - 1))
+})
+plots_M8_zoom <- lapply(1:length(results_M8), function(i) {
+  data_i <- results_M8[[i]] |> filter(data_iniSE >= results_M8[[i]]$data_iniSE[start_week - (p+1) - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+})
+plots_M9 <- lapply(1:length(results_M9), function(i) {
+  data_i <- results_M9[[i]]
+  plot_pred_by_window(data_i, trashold_week = start_week - 7 + (i - 1))
+})
+plots_M9_zoom <- lapply(1:length(results_M9), function(i) {
+  data_i <- results_M9[[i]] |> filter(data_iniSE >= results_M9[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
 })
 
 saveRDS(plots_M0, file = "results/joinville/plots_pred_M0.rds")
@@ -54,6 +100,18 @@ saveRDS(plots_M5, file = "results/joinville/plots_pred_M5.rds")
 saveRDS(plots_M6, file = "results/joinville/plots_pred_M6.rds")
 saveRDS(plots_M7, file = "results/joinville/plots_pred_M7.rds")
 saveRDS(plots_M8, file = "results/joinville/plots_pred_M8.rds")
+saveRDS(plots_M9, file = "results/joinville/plots_pred_M9.rds")
+
+saveRDS(plots_M0_zoom, file = "results/joinville/plots_pred_M0_zoom.rds")
+saveRDS(plots_M1_zoom, file = "results/joinville/plots_pred_M1_zoom.rds")
+saveRDS(plots_M2_zoom, file = "results/joinville/plots_pred_M2_zoom.rds")
+saveRDS(plots_M3_zoom, file = "results/joinville/plots_pred_M3_zoom.rds")
+saveRDS(plots_M4_zoom, file = "results/joinville/plots_pred_M4_zoom.rds")
+saveRDS(plots_M5_zoom, file = "results/joinville/plots_pred_M5_zoom.rds")
+saveRDS(plots_M6_zoom, file = "results/joinville/plots_pred_M6_zoom.rds")
+saveRDS(plots_M7_zoom, file = "results/joinville/plots_pred_M7_zoom.rds")
+saveRDS(plots_M8_zoom, file = "results/joinville/plots_pred_M8_zoom.rds")
+saveRDS(plots_M9_zoom, file = "results/joinville/plots_pred_M9_zoom.rds")
 
 pred_M0 <- get_pred(results_M0$data_inla)
 pred_M1 <- get_pred(results_M1$data_inla)
@@ -64,6 +122,7 @@ pred_M5 <- get_pred(results_M5$data_inla)
 pred_M6 <- get_pred(results_M6$data_inla)
 pred_M7 <- get_pred(results_M7$data_inla)
 pred_M8 <- get_pred(results_M8)
+pred_M9 <- get_pred(results_M9)
 
 bcis_M0 <- compute_bcis(results_M0$fit)
 bcis_M1 <- compute_bcis(results_M1$fit)
@@ -131,7 +190,7 @@ saveRDS(plots_week_effect_M7, file = "results/joinville/plots_week_effect_M7.rds
 saveRDS(plots_year_effect_M7, file = "results/joinville/plots_year_effect_M7.rds")
 
 
-quantiles <- c(0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95)
+quantiles <- c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
 wis_M0 <- mean(sapply(results_M0$fit, compute_wis, quantile_level = quantiles, 
                       data = dengue_climate_joinville, outcome = "casos"))
 wis_M1 <- mean(sapply(results_M1$fit, compute_wis, quantile_level = quantiles, 
@@ -154,6 +213,12 @@ wis_M8 <- mean(sapply(results_M8, function(pred) {
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
+wis_M9 <- mean(sapply(results_M9, function(pred) {
+  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
 
 waic_M0 <- mean(sapply(results_M0$fit, function(fit) fit$waic$waic))
 waic_M1 <- mean(sapply(results_M1$fit, function(fit) fit$waic$waic))
@@ -164,6 +229,7 @@ waic_M5 <- mean(sapply(results_M5$fit, function(fit) fit$waic$waic))
 waic_M6 <- mean(sapply(results_M6$fit, function(fit) fit$waic$waic))
 waic_M7 <- mean(sapply(results_M7$fit, function(fit) fit$waic$waic))
 waic_M8 <- NA 
+waic_M9 <- NA
 
 mae_id_M0 <- mae_by_col(pred_M0, "index")
 mae_id_M1 <- mae_by_col(pred_M1, "index")
@@ -174,6 +240,7 @@ mae_id_M5 <- mae_by_col(pred_M5, "index")
 mae_id_M6 <- mae_by_col(pred_M6, "index")
 mae_id_M7 <- mae_by_col(pred_M7, "index")
 mae_id_M8 <- mae_by_col(pred_M8, "index")
+mae_id_M9 <- mae_by_col(pred_M9, "index")
 
 mae_window_M0 <- mae_by_col(pred_M0, "window")
 mae_window_M1 <- mae_by_col(pred_M1, "window")
@@ -184,6 +251,7 @@ mae_window_M5 <- mae_by_col(pred_M5, "window")
 mae_window_M6 <- mae_by_col(pred_M6, "window")
 mae_window_M7 <- mae_by_col(pred_M7, "window")
 mae_window_M8 <- mae_by_col(pred_M8, "window")
+mae_window_M9 <- mae_by_col(pred_M9, "window")
 
 mae_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases))
 mae_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases))
@@ -194,6 +262,7 @@ mae_M5 <- mean(abs(pred_M5$obs - pred_M5$predicted_cases))
 mae_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases))
 mae_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases))
 mae_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases))
+mae_M9 <- mean(abs(pred_M9$obs - pred_M9$predicted_cases))
 
 mae_id <- rbind(
   cbind(model = "M0", mae_id_M0),
@@ -204,7 +273,8 @@ mae_id <- rbind(
   cbind(model = "M5", mae_id_M5),
   cbind(model = "M6", mae_id_M6),
   cbind(model = "M7", mae_id_M7),
-  cbind(model = "M8", mae_id_M8)
+  cbind(model = "M8", mae_id_M8),
+  cbind(model = "M9", mae_id_M9)
 ) %>%
   pivot_wider(
     names_from = model,
@@ -222,7 +292,8 @@ mae_window <- rbind(
   cbind(model = "M5", mae_window_M5),
   cbind(model = "M6", mae_window_M6),
   cbind(model = "M7", mae_window_M7),
-  cbind(model = "M8", mae_window_M8)
+  cbind(model = "M8", mae_window_M8),
+  cbind(model = "M9", mae_window_M9)
 ) %>%
   pivot_wider(
     names_from = model,
@@ -232,9 +303,9 @@ mae_window <- rbind(
   write_csv("results/joinville/mae_by_window.csv")
 
 summary_metrics <- data.frame(
-  model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8"),
-  wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8),
-  waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8),
-  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8)
+  model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9"),
+  wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8, wis_M9),
+  waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8, waic_M9),
+  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8, mae_M9)
 ) %>%
   write_csv("results/joinville/summary_metrics.csv")

@@ -46,27 +46,27 @@ plot_pred_by_window <- function(data, trashold_week) {
   plot <- ggplot(data, aes(x = data_iniSE)) +
     
     # Credible interval (gray ribbon)
-    geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = "CI"),
-                alpha = 0.6) +
+    geom_ribbon(data = data |> dplyr::filter(data_iniSE > as.Date(data$data_iniSE[trashold_week])),
+      aes(ymin = lower_ci, ymax = upper_ci, fill = "CI"),
+                alpha = 0.9) +
     
     # Observed (bars)
-    geom_col(aes(y = obs, fill = "counting"),
+    geom_line(aes(y = obs, color = "counting"),
              alpha = 0.9) +
     
     # Fitted (dashed blue line)
     geom_line(aes(y = predicted_cases, color = "fitted"),
-              linetype = "dashed", linewidth = 1) +
+              linetype = "dashed", linewidth = 0.6) +
     
-    geom_vline(xintercept = data$data_iniSE[trashold_week], linetype = "dashed", 
-               color = "black", linewidth = 1.5) +
+    # geom_vline(xintercept = data$data_iniSE[trashold_week], linetype = "dashed", 
+    #            color = "black", linewidth = 1.5) +
     
-    scale_fill_manual(name = "", values = c("counting" = "#9ecae1",
-                                            "CI" = "gray70"),
-                      labels = c("counting" = "Observed",
-                                 "CI" = "90% CI")
+    scale_fill_manual(name = "", values = c("CI" = "gray70"),
+                      labels = c("CI" = "95% CI")
     ) +
-    scale_color_manual(name = "", values = c("fitted" = "blue"),
-                       labels = c("Fitted")) +
+    scale_color_manual(name = "", values = c("fitted" = "blue", "counting" = "orange"),
+                       labels = c("counting" = "Observed",
+                                  "Fitted")) +
     scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
     
     labs(
@@ -174,7 +174,7 @@ plot_random_effects <- function(fit, name, name_group = NULL){
   return(plot)
 }
 
-run_ar <- function(p) {
+run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)) {
   cl <- makeCluster(15)
   clusterExport(cl, varlist = c("dengue_climate_joinville", 
                                 "ar_p", 
@@ -189,7 +189,7 @@ run_ar <- function(p) {
     library(dplyr)
     library(tidyr)
   })
-  pred_window <- parLapply(cl, start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  pred_window <- pblapply(cl = cl, start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
     y <- log(dengue_climate_joinville[dengue_climate_joinville$time_id < i, "casos"]$casos + 1)
     X <- embed(y, p + 1)
     

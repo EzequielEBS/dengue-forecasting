@@ -70,6 +70,6 @@ maes <- lapply(seq_along(ps), function(i) {
 })
 
 # best model: p = 10
-quantiles <- c(0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95)
+quantiles <- c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
 pred_window_ar <- run_ar(p = 10)
 saveRDS(pred_window_ar, file = "results/joinville/results_M8.rds")

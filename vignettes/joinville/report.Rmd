@@ -25,6 +25,18 @@ plots_pred_M5 <- readRDS(here::here("results", "joinville", "plots_pred_M5.rds")
 plots_pred_M6 <- readRDS(here::here("results", "joinville", "plots_pred_M6.rds"))
 plots_pred_M7 <- readRDS(here::here("results", "joinville", "plots_pred_M7.rds"))
 plots_pred_M8 <- readRDS(here::here("results", "joinville", "plots_pred_M8.rds"))
+plots_pred_M9 <- readRDS(here::here("results", "joinville", "plots_pred_M9.rds"))
+
+plots_pred_M0_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M0_zoom.rds"))
+plots_pred_M1_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M1_zoom.rds"))
+plots_pred_M2_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M2_zoom.rds"))
+plots_pred_M3_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M3_zoom.rds"))
+plots_pred_M4_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M4_zoom.rds"))
+plots_pred_M5_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M5_zoom.rds"))
+plots_pred_M6_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M6_zoom.rds"))
+plots_pred_M7_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M7_zoom.rds"))
+plots_pred_M8_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M8_zoom.rds"))
+plots_pred_M9_zoom <- readRDS(here::here("results", "joinville", "plots_pred_M9_zoom.rds"))
 
 plots_time_effect_M0 <- readRDS(here::here("results", "joinville", "plots_time_effect_M0.rds"))
 plots_time_effect_M1 <- readRDS(here::here("results", "joinville", "plots_time_effect_M1.rds"))
@@ -180,6 +192,7 @@ v_t(w, \text{year}_t) &\sim \text{AR1}(\rho, \sigma^2_y).
 
 ```{r model_0, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M0[[length(plots_pred_M0)]])
+print(plots_pred_M0_zoom[[length(plots_pred_M0_zoom)]])
 print(plots_time_effect_M0[[length(plots_time_effect_M0)]])
 print(plots_week_effect_M0[[length(plots_week_effect_M0)]])
 ```
@@ -192,6 +205,7 @@ print(plots_week_effect_M0[[length(plots_week_effect_M0)]])
 
 ```{r model_1, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M1[[length(plots_pred_M1)]])
+print(plots_pred_M1_zoom[[length(plots_pred_M1_zoom)]])
 print(plots_time_effect_M1[[length(plots_time_effect_M1)]])
 print(plots_week_effect_M1[[length(plots_week_effect_M1)]])
 ```
@@ -203,6 +217,7 @@ print(plots_week_effect_M1[[length(plots_week_effect_M1)]])
 - $X_t = \text{temp\_min\_avg\_8w}_t$.
 ```{r model_2, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M2[[length(plots_pred_M2)]])
+print(plots_pred_M2_zoom[[length(plots_pred_M2_zoom)]])
 print(plots_time_effect_M2[[length(plots_time_effect_M2)]])
 print(plots_week_effect_M2[[length(plots_week_effect_M2)]])
 ```
@@ -213,6 +228,7 @@ print(plots_week_effect_M2[[length(plots_week_effect_M2)]])
 - $X_t = \text{temp\_max\_avg\_8w}_t$.
 ```{r model_3, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M3[[length(plots_pred_M3)]])
+print(plots_pred_M3_zoom[[length(plots_pred_M3_zoom)]])
 print(plots_time_effect_M3[[length(plots_time_effect_M3)]])
 print(plots_week_effect_M3[[length(plots_week_effect_M3)]])
 ```
@@ -223,6 +239,7 @@ print(plots_week_effect_M3[[length(plots_week_effect_M3)]])
 - $X_t = \text{temp\_avg\_12w}_t$
 ```{r model_4, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M4[[length(plots_pred_M4)]])
+print(plots_pred_M4_zoom[[length(plots_pred_M4_zoom)]])
 print(plots_time_effect_M4[[length(plots_time_effect_M4)]])
 print(plots_week_effect_M4[[length(plots_week_effect_M4)]])
 ```
@@ -233,6 +250,7 @@ print(plots_week_effect_M4[[length(plots_week_effect_M4)]])
 - $X_t = \text{temp\_min\_avg\_12w}_t$
 ```{r model_5, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M5[[length(plots_pred_M5)]])
+print(plots_pred_M5_zoom[[length(plots_pred_M5_zoom)]])
 print(plots_time_effect_M5[[length(plots_time_effect_M5)]])
 print(plots_week_effect_M5[[length(plots_week_effect_M5)]])
 ```
@@ -243,6 +261,7 @@ print(plots_week_effect_M5[[length(plots_week_effect_M5)]])
 - $X_t = \text{temp\_max\_avg\_12w}_t$
 ```{r model_6, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M6[[length(plots_pred_M6)]])
+print(plots_pred_M6_zoom[[length(plots_pred_M6_zoom)]])
 print(plots_time_effect_M6[[length(plots_time_effect_M6)]])
 print(plots_week_effect_M6[[length(plots_week_effect_M6)]])
 ```
@@ -260,6 +279,7 @@ v_t &\sim \text{Normal}(0, \sigma^2_v).
 
 ```{r model_7, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M7[[length(plots_pred_M7)]])
+print(plots_pred_M7_zoom[[length(plots_pred_M7_zoom)]])
 print(plots_week_effect_M7[[length(plots_week_effect_M7)]])
 print(plots_year_effect_M7[[length(plots_year_effect_M7)]])
 ```
@@ -277,6 +297,25 @@ Y_t &= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
 
 ```{r model_8, echo = TRUE, fig.width=14, fig.height=6}
 print(plots_pred_M8[[length(plots_pred_M8)]])
+print(plots_pred_M8_zoom[[length(plots_pred_M8_zoom)]])
+```
+
+# Model 9: SARIMAX(2,1,3)(0,0,2)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- $X_t = \text{temp\_avg\_8w}_t$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= X_t \beta + \eta_t, \\
+(1-\phi_1 B - \phi_2 B^2)(1 - B)\eta_t &= (1 + \theta_1 B + \theta_2 B^2 + \theta_3 B^3)(1 + \Theta_1 B^{52} + \Theta_2 B^{104})\epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_9, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M9[[length(plots_pred_M9)]])
+print(plots_pred_M9_zoom[[length(plots_pred_M9_zoom)]])
 ```
 
 # Model Comparison
