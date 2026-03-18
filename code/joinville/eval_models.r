@@ -19,76 +19,76 @@ results_M9 <- readRDS("results/joinville/results_M9.rds")
 start_week <- 514
 
 plots_M0 <- lapply(1:length(results_M0$data_inla), function(i) {
-  plot_pred_by_window(results_M0$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M0$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M0_zoom <- lapply(1:length(results_M0$data_inla), function(i) {
   data_i <- results_M0$data_inla[[i]] |> filter(data_iniSE >= results_M0$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M1 <- lapply(1:length(results_M1$data_inla), function(i) {
-  plot_pred_by_window(results_M1$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M1$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M1_zoom <- lapply(1:length(results_M1$data_inla), function(i) {
   data_i <- results_M1$data_inla[[i]] |> filter(data_iniSE >= results_M1$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M2 <- lapply(1:length(results_M2$data_inla), function(i) {
-  plot_pred_by_window(results_M2$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M2$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M2_zoom <- lapply(1:length(results_M2$data_inla), function(i) {
   data_i <- results_M2$data_inla[[i]] |> filter(data_iniSE >= results_M2$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M3 <- lapply(1:length(results_M3$data_inla), function(i) {
-  plot_pred_by_window(results_M3$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M3$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M3_zoom <- lapply(1:length(results_M3$data_inla), function(i) {
   data_i <- results_M3$data_inla[[i]] |> filter(data_iniSE >= results_M3$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M4 <- lapply(1:length(results_M4$data_inla), function(i) {
-  plot_pred_by_window(results_M4$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M4$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M4_zoom <- lapply(1:length(results_M4$data_inla), function(i) {
   data_i <- results_M4$data_inla[[i]] |> filter(data_iniSE >= results_M4$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M5 <- lapply(1:length(results_M5$data_inla), function(i) {
-  plot_pred_by_window(results_M5$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M5$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M5_zoom <- lapply(1:length(results_M5$data_inla), function(i) {
   data_i <- results_M5$data_inla[[i]] |> filter(data_iniSE >= results_M5$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M6 <- lapply(1:length(results_M6$data_inla), function(i) {
-  plot_pred_by_window(results_M6$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M6$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M6_zoom <- lapply(1:length(results_M6$data_inla), function(i) {
   data_i <- results_M6$data_inla[[i]] |> filter(data_iniSE >= results_M6$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M7 <- lapply(1:length(results_M7$data_inla), function(i) {
-  plot_pred_by_window(results_M7$data_inla[[i]], trashold_week = start_week + (i - 1))
+  plot_pred_by_window(results_M7$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M7_zoom <- lapply(1:length(results_M7$data_inla), function(i) {
   data_i <- results_M7$data_inla[[i]] |> filter(data_iniSE >= results_M7$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 p <- 10
 plots_M8 <- lapply(1:length(results_M8), function(i) {
-  plot_pred_by_window(results_M8[[i]], trashold_week = start_week - (p+1) + (i - 1))
+  plot_pred_by_window(results_M8[[i]], threshold_week = start_week - (p+1) + (i - 1))
 })
 plots_M8_zoom <- lapply(1:length(results_M8), function(i) {
   data_i <- results_M8[[i]] |> filter(data_iniSE >= results_M8[[i]]$data_iniSE[start_week - (p+1) - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 plots_M9 <- lapply(1:length(results_M9), function(i) {
   data_i <- results_M9[[i]]
-  plot_pred_by_window(data_i, trashold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
 })
 plots_M9_zoom <- lapply(1:length(results_M9), function(i) {
   data_i <- results_M9[[i]] |> filter(data_iniSE >= results_M9[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, trashold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
 })
 
 saveRDS(plots_M0, file = "results/joinville/plots_pred_M0.rds")

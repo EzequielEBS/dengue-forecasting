@@ -4,6 +4,7 @@ library(cmdstanr)
 library(ggplot2)
 library(posterior)
 library(parallel)
+library(pbapply)
 
 source("code/aux_func.r")
 

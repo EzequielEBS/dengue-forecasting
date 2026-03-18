@@ -196,7 +196,7 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
     library(tidyr)
   })
   pred_window <- pblapply(cl = cl, start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
-    y <- log(dengue_climate_joinville[dengue_climate_joinville$time_id < i, "casos"]$casos + 1)
+    y <- log(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, "casos"]$casos + 1)
     X <- embed(y, p + 1)
     
     standata <- list(
@@ -222,12 +222,10 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
     )
     
     pred_insample <- posterior::as_draws_df(pred$draws("y_rep"))
-    pred_insample <- pred_insample |>
-      dplyr::mutate(dplyr::across(dplyr::starts_with("y_rep"), ~ exp(.x) - 1)) |> 
+    pred_insample <- pred_insample |> 
       dplyr::select(-.chain, -.iteration, -.draw)
     pred_outsample <- posterior::as_draws_df(pred$draws("y_forecast"))
-    pred_outsample <- pred_outsample |>
-      dplyr::mutate(dplyr::across(dplyr::starts_with("y_forecast"), ~ exp(.x) - 1)) |> 
+    pred_outsample <- pred_outsample |> 
       dplyr::select(-.chain, -.iteration, -.draw)
     
     pred <- cbind(pred_insample, pred_outsample)
@@ -241,14 +239,20 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
       mutate(variable = factor(variable, levels = col_order)) |>
       group_by(variable) |>
       summarise(
-        mean  = mean(y),
-        lower_ci = quantile(y, quantiles[1]),
+        mean  = ifelse(mean(y) < 0, 0, mean(y)),
+        lower_ci = ifelse(quantile(y, quantiles[1]) < 0, 0, quantile(y, quantiles[1])),
         upper_ci = quantile(y, quantiles[length(quantiles)]),
         .groups = "drop"
-      )
+      ) |>
+      mutate(mean = exp(mean) - 1,
+             lower_ci = exp(lower_ci) - 1,
+             upper_ci = exp(upper_ci) - 1)
     
     quant <- apply(pred, 2, function(col) {
-      quantile(col, probs = quantiles)
+      q <- quantile(col, probs = quantiles)
+      q[1] <- ifelse(q[1] < 0, 0, q[1])
+      q <- exp(q) - 1
+      return(q)
     })
     quant <- quant %>%
       t() %>%
