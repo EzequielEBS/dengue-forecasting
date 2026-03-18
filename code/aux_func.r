@@ -1,7 +1,7 @@
-run_inla_model <- function(data, outcome, trashold_week, formula, family, quantiles = c(0.025, 0.975)) {
-  train_data <- data[data$epiweek <= data$epiweek[trashold_week], ]
-  test_data <- data[data$epiweek > data$epiweek[trashold_week] &
-                    data$epiweek <= data$epiweek[trashold_week + 3], ]
+run_inla_model <- function(data, outcome, threshold_week, formula, family, quantiles = c(0.025, 0.975)) {
+  train_data <- data[data$epiweek <= data$epiweek[threshold_week], ]
+  test_data <- data[data$epiweek > data$epiweek[threshold_week] &
+                    data$epiweek <= data$epiweek[threshold_week + 3], ]
   obs_values <- c(train_data[[outcome]], test_data[[outcome]])
   test_data[[outcome]] <- NA
   data_inla <- rbind(train_data, test_data)
@@ -42,11 +42,11 @@ get_pred <- function(results, len_windows = 3) {
   return(data_pred)
 }
 
-plot_pred_by_window <- function(data, trashold_week) {
+plot_pred_by_window <- function(data, threshold_week) {
   plot <- ggplot(data, aes(x = data_iniSE)) +
     
     # Credible interval (gray ribbon)
-    geom_ribbon(data = data |> dplyr::filter(data_iniSE > as.Date(data$data_iniSE[trashold_week])),
+    geom_ribbon(data = data |> dplyr::filter(data_iniSE > as.Date(data$data_iniSE[threshold_week])),
       aes(ymin = lower_ci, ymax = upper_ci, fill = "CI"),
                 alpha = 0.9) +
     
@@ -58,7 +58,7 @@ plot_pred_by_window <- function(data, trashold_week) {
     geom_line(aes(y = predicted_cases, color = "fitted"),
               linetype = "dashed", linewidth = 0.6) +
     
-    # geom_vline(xintercept = data$data_iniSE[trashold_week], linetype = "dashed", 
+    # geom_vline(xintercept = data$data_iniSE[threshold_week], linetype = "dashed", 
     #            color = "black", linewidth = 1.5) +
     
     scale_fill_manual(name = "", values = c("CI" = "gray70"),
@@ -144,6 +144,12 @@ mae_by_col <- function(data_pred, col_name) {
   return(mae_values)
 }
 
+rmse_by_col <- function(data_pred, col_name) {
+  rmse_values <- data_pred %>%
+    group_by(.data[[col_name]]) %>%
+    summarise(rmse = sqrt(mean((obs - predicted_cases)^2)))
+  return(rmse_values)
+}
 
 plot_random_effects <- function(fit, name, name_group = NULL){
   if (is.null(name_group)) {

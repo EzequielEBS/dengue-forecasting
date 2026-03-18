@@ -242,6 +242,17 @@ mae_id_M7 <- mae_by_col(pred_M7, "index")
 mae_id_M8 <- mae_by_col(pred_M8, "index")
 mae_id_M9 <- mae_by_col(pred_M9, "index")
 
+rmse_id_M0 <- rmse_by_col(pred_M0, "index")
+rmse_id_M1 <- rmse_by_col(pred_M1, "index")
+rmse_id_M2 <- rmse_by_col(pred_M2, "index")
+rmse_id_M3 <- rmse_by_col(pred_M3, "index")
+rmse_id_M4 <- rmse_by_col(pred_M4, "index")
+rmse_id_M5 <- rmse_by_col(pred_M5, "index")
+rmse_id_M6 <- rmse_by_col(pred_M6, "index")
+rmse_id_M7 <- rmse_by_col(pred_M7, "index")
+rmse_id_M8 <- rmse_by_col(pred_M8, "index")
+rmse_id_M9 <- rmse_by_col(pred_M9, "index")
+
 mae_window_M0 <- mae_by_col(pred_M0, "window")
 mae_window_M1 <- mae_by_col(pred_M1, "window")
 mae_window_M2 <- mae_by_col(pred_M2, "window")
@@ -253,6 +264,17 @@ mae_window_M7 <- mae_by_col(pred_M7, "window")
 mae_window_M8 <- mae_by_col(pred_M8, "window")
 mae_window_M9 <- mae_by_col(pred_M9, "window")
 
+rmse_window_M0 <- rmse_by_col(pred_M0, "window")
+rmse_window_M1 <- rmse_by_col(pred_M1, "window")
+rmse_window_M2 <- rmse_by_col(pred_M2, "window")
+rmse_window_M3 <- rmse_by_col(pred_M3, "window")
+rmse_window_M4 <- rmse_by_col(pred_M4, "window")
+rmse_window_M5 <- rmse_by_col(pred_M5, "window")
+rmse_window_M6 <- rmse_by_col(pred_M6, "window")
+rmse_window_M7 <- rmse_by_col(pred_M7, "window")
+rmse_window_M8 <- rmse_by_col(pred_M8, "window")
+rmse_window_M9 <- rmse_by_col(pred_M9, "window")
+
 mae_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases))
 mae_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases))
 mae_M2 <- mean(abs(pred_M2$obs - pred_M2$predicted_cases))
@@ -263,6 +285,18 @@ mae_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases))
 mae_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases))
 mae_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases))
 mae_M9 <- mean(abs(pred_M9$obs - pred_M9$predicted_cases))
+
+rmse_M0 <- sqrt(mean((pred_M0$obs - pred_M0$predicted_cases)^2))
+rmse_M1 <- sqrt(mean((pred_M1$obs - pred_M1$predicted_cases)^2))
+rmse_M2 <- sqrt(mean((pred_M2$obs - pred_M2$predicted_cases)^2))
+rmse_M3 <- sqrt(mean((pred_M3$obs - pred_M3$predicted_cases)^2))
+rmse_M4 <- sqrt(mean((pred_M4$obs - pred_M4$predicted_cases)^2))
+rmse_M5 <- sqrt(mean((pred_M5$obs - pred_M5$predicted_cases)^2))
+rmse_M6 <- sqrt(mean((pred_M6$obs - pred_M6$predicted_cases)^2))
+rmse_M7 <- sqrt(mean((pred_M7$obs - pred_M7$predicted_cases)^2))
+rmse_M8 <- sqrt(mean((pred_M8$obs - pred_M8$predicted_cases)^2))
+rmse_M9 <- sqrt(mean((pred_M9$obs - pred_M9$predicted_cases)^2))
+
 
 mae_id <- rbind(
   cbind(model = "M0", mae_id_M0),
@@ -302,10 +336,49 @@ mae_window <- rbind(
   ) %>%
   write_csv("results/joinville/mae_by_window.csv")
 
+rmse_id <- rbind(
+  cbind(model = "M0", rmse_id_M0),
+  cbind(model = "M1", rmse_id_M1),
+  cbind(model = "M2", rmse_id_M2),
+  cbind(model = "M3", rmse_id_M3),
+  cbind(model = "M4", rmse_id_M4),
+  cbind(model = "M5", rmse_id_M5),
+  cbind(model = "M6", rmse_id_M6),
+  cbind(model = "M7", rmse_id_M7),
+  cbind(model = "M8", rmse_id_M8),
+  cbind(model = "M9", rmse_id_M9)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = rmse,
+    names_prefix = "rmse_"
+  ) %>%
+  write_csv("results/joinville/rmse_by_id.csv")
+
+rmse_window <- rbind(
+  cbind(model = "M0", rmse_window_M0),
+  cbind(model = "M1", rmse_window_M1),
+  cbind(model = "M2", rmse_window_M2),
+  cbind(model = "M3", rmse_window_M3),
+  cbind(model = "M4", rmse_window_M4),
+  cbind(model = "M5", rmse_window_M5),
+  cbind(model = "M6", rmse_window_M6),
+  cbind(model = "M7", rmse_window_M7),
+  cbind(model = "M8", rmse_window_M8),
+  cbind(model = "M9", rmse_window_M9)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = rmse,
+    names_prefix = "rmse_"
+  ) %>%
+  write_csv("results/joinville/rmse_by_window.csv")
+
 summary_metrics <- data.frame(
   model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9"),
   wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8, wis_M9),
   waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8, waic_M9),
-  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8, mae_M9)
+  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8, mae_M9),
+  rmse = c(rmse_M0, rmse_M1, rmse_M2, rmse_M3, rmse_M4, rmse_M5, rmse_M6, rmse_M7, rmse_M8, rmse_M9)
 ) %>%
   write_csv("results/joinville/summary_metrics.csv")
