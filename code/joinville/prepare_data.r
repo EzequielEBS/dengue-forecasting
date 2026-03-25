@@ -290,6 +290,18 @@ dengue_climate_sc <- dengue_climate_sc %>%
 ) %>%
   ungroup()
 
+# calculate the 52-week rolling average 
+dengue_climate_joinville <- dengue_climate_joinville %>%
+  arrange(epiweek) %>%
+  mutate(precip_avg_52w = slide_dbl(
+    precip_total,
+    mean,
+    .before = 52,   # look 52 steps back
+    .after = -1,   # exclude current week
+    .complete = F
+  )
+)
+
 
 # create trashold temp_med_avg
 dengue_climate_joinville <- dengue_climate_joinville %>%
@@ -347,7 +359,9 @@ dengue_climate_joinville <- dengue_climate_joinville %>%
                   temp_min_avg_12w, temp_max_avg_12w, umid_min_avg_12w, umid_max_avg_12w,
                   temp_med_lag1, temp_med_lag2, temp_med_lag3, temp_med_lag4,
                   umid_med_lag1, umid_med_lag2, umid_med_lag3, umid_med_lag4,
-                  temp_med_range_4w, umid_med_range_4w),
+                  temp_med_range_4w, umid_med_range_4w, 
+                  precip_avg_52w
+                ),
                 ~ (.x - mean(.x)) / sd(.x)
                 )
          )

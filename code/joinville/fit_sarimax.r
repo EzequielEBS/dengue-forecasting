@@ -3,23 +3,131 @@ library(forecast)
 library(TSA)
 library(zoo)
 library(tidyverse)
-library(pbapply)
 library(parallel)
+library(pbapply)
 
+source("code/aux_func.r")
 dengue_climate_joinville <- read_csv("data/joinville/dengue_climate_joinville_inla.csv")
-dengue_climate_joinville_ts <- ts(dengue_climate_joinville,
-                                  frequency = 52, 
-                                  start = c(2015, 9)
-                                  )
-ln100_casos <- log(dengue_climate_joinville_ts[, "casos"] + 100)
 
-m1 <- auto.arima(window(ln100_casos, end = c(2026,7)),
-                 xreg = window(dengue_climate_joinville_ts[, "temp_avg_8w"], end = c(2026,7)))
-m1
+# Choose the best model using auto.arima
+start_week <- 514
+i <- nrow(dengue_climate_joinville) - 3
+best_par_base <- sel_par_sarimax(
+  data_i = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  xreg = NULL
+)
+best_par_temp8w <- sel_par_sarimax(
+  data_i = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  xreg = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, "temp_avg_8w"],
+            frequency = 52, 
+            start = c(2015, 9)
+  )
+)
+best_par_temp8w_precip52w <- sel_par_sarimax(
+  data_i = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  xreg = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, c("temp_avg_8w", "precip_avg_52w")],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  stepwise = F
+)
+best_par_temp8w_umid12w <- sel_par_sarimax(
+  data_i = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  xreg = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, c("temp_avg_8w", "umid_max_avg_12w")],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  stepwise = F
+)
+best_par_temp12w <- sel_par_sarimax(
+  data_i = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  xreg = ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, "temp_avg_12w"],
+            frequency = 52, 
+            start = c(2015, 9)
+  ),
+  stepwise = F
+)
+
+# # choose the best model using the minimum MAE 
+# p_val <- 0:3
+# d_val <- 0:2
+# q_val <- 0:3
+# P_val <- 0:2
+# D_val <- 0:1
+# Q_val <- 0:2
+
+# grid <- expand.grid(p = p_val, d = d_val, q = q_val, P = P_val, D = D_val, Q = Q_val) %>%
+#   filter(!(p == 0 & d == 0 & q == 0)) %>%
+#   filter(!(P == 0 & D == 0 & Q == 0))
+
+# cl <- makeCluster(15)
+# clusterExport(cl, varlist = c(
+#                               "dengue_climate_joinville",
+#                               "grid",
+#                               "start_week",
+#                               "run_sarimax"
+#                               ),
+#                 envir = environment())
+# clusterEvalQ(cl, {
+#   library(dplyr)
+# })
+
+# mae_temp8w <- lapply(1:nrow(grid), function(i) {
+#   clusterExport(cl, varlist = c("i"), envir = environment())
+#   mae <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(w) {
+#     out <- tryCatch({
+
+#       pred <- run_sarimax(
+#         dengue_climate_joinville,
+#         cov_name = "temp_avg_8w",
+#         w = w,               
+#         par = grid[i, ]
+#       )
+
+#       outsample <- (nrow(pred) - 2):nrow(pred)
+#       mean(abs(pred$obs[outsample] - pred$predicted_cases[outsample]))
+
+#     }, error = function(e) {
+#       message(sprintf("Error at i=%d, w=%d: %s", i, w, e$message))
+#       return(NA)
+#     })
+
+#     return(out)
+#   },
+#   cl = cl
+#   )
+#   print(sprintf("Completed i=%d/%d", i, nrow(grid)))
+#   mean(unlist(mae), na.rm = TRUE)
+#   }
+# ) %>%
+#   unlist()
+# stopCluster(cl)
+
 
 cl <- makeCluster(15)
 clusterExport(cl, varlist = c(
-                              "dengue_climate_joinville"
+                              "dengue_climate_joinville",
+                              # "best_par_base",
+                              # "best_par_temp8w",
+                              # "best_par_temp8w_precip52w",
+                              # "best_par_temp8w_umid12w",
+                              "best_par_temp12w",
+                              "run_sarimax"
                                 ),
                 envir = environment())
 clusterEvalQ(cl, {
@@ -27,50 +135,35 @@ clusterEvalQ(cl, {
 })
 
 start_week <- 514
-pred_sarimax <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
-  data_i <- ts(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, ],
-                frequency = 52, 
-                start = c(2015, 9)
-  )
-  xreg <- ts(data_i[, "temp_avg_8w"],
-              frequency = 52, 
-              start = c(2015, 9)
-  )
-  y <- log(data_i[, "casos"] + 100)
-  fit <- TSA::arima(y, order = c(2,1,3), seasonal = c(0,0,2), xreg = xreg)
-  resids <- residuals(fit)
-  pred_insample <- as.numeric(y) - as.numeric(resids)
-  pred_outsample <- predict(fit, n.ahead = 3,
-                  newxreg = data_i[(nrow(data_i) -2):nrow(data_i), "temp_avg_8w"])
-  e95 <- qnorm(1-0.05/2,0,1)  
-  e90 <- qnorm(1-0.1/2,0,1)
-  e80 <- qnorm(1-0.2/2,0,1)
-  e50 <- qnorm(1-0.5/2,0,1)
-  rows <- length(pred_insample) + length(pred_outsample$pred)
-  data_pred <- data.frame(
-    data_iniSE = dengue_climate_joinville[1:rows, "data_iniSE"]$data_iniSE,
-    obs = dengue_climate_joinville[1:rows, "casos"]$casos,
-    predicted_cases = exp(c(pred_insample, pred_outsample$pred)) - 100,
-    lower_ci = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e95 * pred_outsample$se) - 100),
-    upper_ci = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e95 * pred_outsample$se) - 100),
-    `0.025quant` = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e95 * pred_outsample$se) - 100),
-    `0.05quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e90 * pred_outsample$se) - 100),
-    `0.1quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e80 * pred_outsample$se) - 100),
-    `0.25quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e50 * pred_outsample$se) - 100),
-    `0.5quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred) - 100),
-    `0.75quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e50 * pred_outsample$se) - 100),
-    `0.9quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e80 * pred_outsample$se) - 100),
-    `0.95quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e90 * pred_outsample$se) - 100),
-    `0.975quant` = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e95 * pred_outsample$se) - 100),
-    check.names = FALSE
-  )
-  data_pred <- data_pred %>%
-    mutate(predicted_cases = ifelse(predicted_cases < 0, 0, predicted_cases),
-            lower_ci = ifelse(lower_ci < 0, 0, lower_ci))
-  return(data_pred)
+pred_sarimax_base <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  run_sarimax(dengue_climate_joinville, cov_name = NULL, w = i, par = best_par_base)
+},
+cl = cl
+)
+pred_sarimax_temp8w <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  run_sarimax(dengue_climate_joinville, cov_name = "temp_avg_8w", w = i, par = best_par_temp8w)
+},
+cl = cl
+)
+pred_sarimax_temp8w_precip52w <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  run_sarimax(dengue_climate_joinville, cov_name = c("temp_avg_8w", "precip_avg_52w"), w = i, par = best_par_temp8w_precip52w)
+},
+cl = cl
+)
+pred_sarimax_temp8w_umid12w <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  run_sarimax(dengue_climate_joinville, cov_name = c("temp_avg_8w", "umid_max_avg_12w"), w = i, par = best_par_temp8w_umid12w)
+},
+cl = cl
+)
+pred_sarimax_temp12w <- pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+  run_sarimax(dengue_climate_joinville, cov_name = "temp_avg_12w", w = i, par = best_par_temp12w)
 },
 cl = cl
 )
 stopCluster(cl)
 
-saveRDS(pred_sarimax, file = "results/joinville/results_M9.rds")
+saveRDS(pred_sarimax_base, file = "results/joinville/results_M9.rds")
+saveRDS(pred_sarimax_temp8w, file = "results/joinville/results_M10.rds")
+saveRDS(pred_sarimax_temp8w_precip52w, file = "results/joinville/results_M11.rds")
+saveRDS(pred_sarimax_temp8w_umid12w, file = "results/joinville/results_M12.rds")
+saveRDS(pred_sarimax_temp12w, file = "results/joinville/results_M13.rds")

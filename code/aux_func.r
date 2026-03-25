@@ -259,7 +259,7 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
       as.data.frame()
     colnames(quant) <- paste0(quantiles, "quant")
     data <- dengue_climate_joinville %>%
-      filter(time_id > p & time_id < i + 3) %>%
+      filter(time_id > p & time_id <= i + 3) %>%
       select(data_iniSE, casos) %>%
       cbind(pred_summ) %>%
       cbind(quant) %>%
@@ -269,4 +269,77 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
   })
   stopCluster(cl)
   return(pred_window)
+}
+
+sel_par_sarimax <- function(data_i, xreg, stepwise = F) {
+  y <- log(data_i[, "casos"] + 100)
+  fit <- forecast::auto.arima(y, 
+                    xreg = xreg,
+                    # max.p = 10, max.q = 10, max.P = 5, max.Q = 5,
+                    stepwise = stepwise
+                  )
+  
+  best_par <- data.frame(
+    p = fit$arma[1],
+    d = fit$arma[6],
+    q = fit$arma[2],
+    P = fit$arma[3],
+    D = fit$arma[7],
+    Q = fit$arma[4],
+    m = fit$arma[5]
+  )
+  return(best_par)
+}
+
+run_sarimax <- function(data, cov_name, w, par) {
+  data_i <- ts(data[data$time_id <= w, ],
+                frequency = 52, 
+                start = c(2015, 9)
+  )
+  if (is.null(cov_name)) {
+    xreg <- NULL
+    xnew <- NULL
+  } else {
+    xreg <- ts(data[data$time_id <= w, cov_name],
+                frequency = 52, 
+                start = c(2015, 9)
+    )
+    xnew <- data[data$time_id > w & data$time_id <= w + 3, cov_name]
+  }
+  y <- log(data_i[, "casos"] + 100)
+  fit <- TSA::arima(y, order = c(par$p, par$d, par$q), 
+                    seasonal = c(par$P, par$D, par$Q),
+                    xreg = xreg
+                  )
+  resids <- residuals(fit)
+  pred_insample <- as.numeric(y) - as.numeric(resids)
+  pred_outsample <- predict(fit, n.ahead = 3,
+                  newxreg = xnew
+                )
+  e95 <- qnorm(1-0.05/2,0,1)  
+  e90 <- qnorm(1-0.1/2,0,1)
+  e80 <- qnorm(1-0.2/2,0,1)
+  e50 <- qnorm(1-0.5/2,0,1)
+  rows <- length(pred_insample) + length(pred_outsample$pred)
+  data_pred <- data.frame(
+    data_iniSE = data[1:rows, "data_iniSE"]$data_iniSE,
+    obs = data[1:rows, "casos"]$casos,
+    predicted_cases = exp(c(pred_insample, pred_outsample$pred)) - 100,
+    lower_ci = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e95 * pred_outsample$se) - 100),
+    upper_ci = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e95 * pred_outsample$se) - 100),
+    `0.025quant` = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e95 * pred_outsample$se) - 100),
+    `0.05quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e90 * pred_outsample$se) - 100),
+    `0.1quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e80 * pred_outsample$se) - 100),
+    `0.25quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred - e50 * pred_outsample$se) - 100),
+    `0.5quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred) - 100),
+    `0.75quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e50 * pred_outsample$se) - 100),
+    `0.9quant`   = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e80 * pred_outsample$se) - 100),
+    `0.95quant`  = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e90 * pred_outsample$se) - 100),
+    `0.975quant` = c(rep(NA, length(pred_insample)), exp(pred_outsample$pred + e95 * pred_outsample$se) - 100),
+    check.names = FALSE
+  )
+  data_pred <- data_pred %>%
+    mutate(predicted_cases = ifelse(predicted_cases < 0, 0, predicted_cases),
+            lower_ci = ifelse(lower_ci < 0, 0, lower_ci))
+  return(data_pred)
 }

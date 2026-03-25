@@ -279,11 +279,15 @@ window.Quarto = {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns for correlation analysis</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>correlation_data <span class="ot">&lt;-</span> dengue_climate_joinville <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(casos, temp_med_avg, temp_avg_8w, temp_min_avg_8w, temp_max_avg_8w, temp_avg_12w, temp_min_avg_12w, temp_max_avg_12w)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the correlation matrix</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(correlation_data, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the correlation matrix</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(cor_matrix, <span class="at">method =</span> <span class="st">"color"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(casos, temp_med_avg, temp_avg_8w, temp_min_avg_8w, temp_max_avg_8w,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>         temp_avg_12w, temp_min_avg_12w, temp_max_avg_12w, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>         umid_med_avg, umid_avg_8w, umid_min_avg_8w, umid_max_avg_8w,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>          umid_avg_12w, umid_min_avg_12w, umid_max_avg_12w,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>          precip_total, precip_avg_52w)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the correlation matrix</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(correlation_data, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the correlation matrix</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(cor_matrix, <span class="at">method =</span> <span class="st">"color"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -670,15 +674,13 @@ Y_t &amp;= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
 </div>
 </div>
 </section>
-<section id="model-9-sarimax21300252" class="level1">
-<h1>Model 9: SARIMAX(2,1,3)(0,0,2)[52]</h1>
+<section id="model-9-sarima11311052" class="level1">
+<h1>Model 9: SARIMA(1,1,3)(1,1,0)[52]</h1>
 <ul>
-<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
-<li><span class="math inline">\(X_t = \text{temp\_avg\_8w}_t\)</span></li>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 1)\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
-Y_t &amp;= X_t \beta + \eta_t, \\
-(1-\phi_1 B - \phi_2 B^2)(1 - B)\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2 + \theta_3 B^3)(1 + \Theta_1 B^{52} + \Theta_2 B^{104})\epsilon_t, \\
-\epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
+Y_t &amp;= \alpha + \eta_t, \\
+(1-\phi_1 B)(1 - B)(1 - B^{52})\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2 + \theta_3 B^3)\epsilon_t, \\
 \end{align*}\]</span></li>
 </ul>
 <p>where <span class="math inline">\(B\)</span> is the backshift operator, i.e., <span class="math inline">\(B Y_t = Y_{t-1}\)</span>.</p>
@@ -701,6 +703,130 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 </div>
 </div>
 </section>
+<section id="model-10-sarimax11200252" class="level1">
+<h1>Model 10: SARIMAX(1,1,2)(0,0,2)[52]</h1>
+<ul>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
+<li><span class="math inline">\(X_t = \text{temp\_avg\_8w}_t\)</span></li>
+<li>The model is defined as follows: <span class="math display">\[\begin{align*}
+Y_t &amp;= X_t \beta + \eta_t, \\
+(1-\phi_1 B)(1 - B)\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2)(1 + \Theta_1 B^{52} + \Theta_2 B^{104})\epsilon_t, \\
+\epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
+\end{align*}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(B\)</span> is the backshift operator, i.e., <span class="math inline">\(B Y_t = Y_{t-1}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M10[[<span class="fu">length</span>(plots_pred_M10)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_10-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M10_zoom[[<span class="fu">length</span>(plots_pred_M10_zoom)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_10-2.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="model-11-sarimax21210052" class="level1">
+<h1>Model 11: SARIMAX(2,1,2)(1,0,0)[52]</h1>
+<ul>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
+<li><span class="math inline">\(X_t = [\text{temp\_avg\_8w}_t, \text{precip\_avg\_52w}_t]\)</span></li>
+<li>The model is defined as follows: <span class="math display">\[\begin{align*}
+Y_t &amp;= X_t \beta + \eta_t, \\
+(1-\phi_1 B - \phi_2 B^2)(1 - B)\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2)(1 + \Theta_1 B^{52})\epsilon_t, \\
+\epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
+\end{align*}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(B\)</span> is the backshift operator, i.e., <span class="math inline">\(B Y_t = Y_{t-1}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M11[[<span class="fu">length</span>(plots_pred_M11)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_11-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M11_zoom[[<span class="fu">length</span>(plots_pred_M11_zoom)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_11-2.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="model-12-sarimax21210052" class="level1">
+<h1>Model 12: SARIMAX(2,1,2)(1,0,0)[52]</h1>
+<ul>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
+<li><span class="math inline">\(X_t = [\text{temp\_avg\_8w}_t, \text{umid\_avg\_12w}_t]\)</span></li>
+<li>The model is defined as follows: <span class="math display">\[\begin{align*}
+Y_t &amp;= X_t \beta + \eta_t, \\
+(1-\phi_1 B - \phi_2 B^2)(1 - B)\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2)(1 + \Theta_1 B^{52})\epsilon_t, \\
+\epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
+\end{align*}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(B\)</span> is the backshift operator, i.e., <span class="math inline">\(B Y_t = Y_{t-1}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M12[[<span class="fu">length</span>(plots_pred_M12)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_12-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M12_zoom[[<span class="fu">length</span>(plots_pred_M12_zoom)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_12-2.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="model-13-sarimax11200252" class="level1">
+<h1>Model 13: SARIMAX(1,1,2)(0,0,2)[52]</h1>
+<ul>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
+<li><span class="math inline">\(X_t = \text{temp\_avg\_12w}_t\)</span></li>
+<li>The model is defined as follows: <span class="math display">\[\begin{align*}
+Y_t &amp;= X_t \beta + \eta_t, \\
+(1-\phi_1 B)(1 - B)\eta_t &amp;= (1 + \theta_1 B + \theta_2 B^2)(1 + \Theta_1 B^{52} + \Theta_2 B^{104})\epsilon_t, \\
+\epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
+\end{align*}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(B\)</span> is the backshift operator, i.e., <span class="math inline">\(B Y_t = Y_{t-1}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M13[[<span class="fu">length</span>(plots_pred_M13)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_13-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots_pred_M13_zoom[[<span class="fu">length</span>(plots_pred_M13_zoom)]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/model_13-2.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="model-comparison" class="level1">
 <h1>Model Comparison</h1>
 <div class="cell">
@@ -708,17 +834,21 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <table class="caption-top table table-sm table-striped small">
 <caption>MAE by Model and Time Window</caption>
 <colgroup>
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
 <col style="width: 7%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -733,6 +863,10 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <th style="text-align: right;">mae_M7</th>
 <th style="text-align: right;">mae_M8</th>
 <th style="text-align: right;">mae_M9</th>
+<th style="text-align: right;">mae_M10</th>
+<th style="text-align: right;">mae_M11</th>
+<th style="text-align: right;">mae_M12</th>
+<th style="text-align: right;">mae_M13</th>
 </tr>
 </thead>
 <tbody>
@@ -747,7 +881,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">58.50</td>
 <td style="text-align: right;">309.83</td>
 <td style="text-align: right;">70.63</td>
-<td style="text-align: right;">46.03</td>
+<td style="text-align: right;">68.47</td>
+<td style="text-align: right;">43.45</td>
+<td style="text-align: right;">40.37</td>
+<td style="text-align: right;">40.62</td>
+<td style="text-align: right;">43.56</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
@@ -760,7 +898,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">101.48</td>
 <td style="text-align: right;">381.17</td>
 <td style="text-align: right;">91.95</td>
-<td style="text-align: right;">76.37</td>
+<td style="text-align: right;">118.72</td>
+<td style="text-align: right;">67.12</td>
+<td style="text-align: right;">65.18</td>
+<td style="text-align: right;">64.97</td>
+<td style="text-align: right;">67.88</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
@@ -773,7 +915,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">141.23</td>
 <td style="text-align: right;">459.65</td>
 <td style="text-align: right;">110.93</td>
-<td style="text-align: right;">101.93</td>
+<td style="text-align: right;">175.43</td>
+<td style="text-align: right;">89.47</td>
+<td style="text-align: right;">88.04</td>
+<td style="text-align: right;">87.49</td>
+<td style="text-align: right;">91.02</td>
 </tr>
 </tbody>
 </table>
@@ -784,17 +930,21 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <table class="caption-top table table-sm table-striped small">
 <caption>MAE by Time Window</caption>
 <colgroup>
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 10%">
-<col style="width: 8%">
-<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -809,6 +959,10 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <th style="text-align: right;">mae_M7</th>
 <th style="text-align: right;">mae_M8</th>
 <th style="text-align: right;">mae_M9</th>
+<th style="text-align: right;">mae_M10</th>
+<th style="text-align: right;">mae_M11</th>
+<th style="text-align: right;">mae_M12</th>
+<th style="text-align: right;">mae_M13</th>
 </tr>
 </thead>
 <tbody>
@@ -823,7 +977,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">116.07</td>
 <td style="text-align: right;">207.49</td>
 <td style="text-align: right;">26.01</td>
-<td style="text-align: right;">43.69</td>
+<td style="text-align: right;">115.28</td>
+<td style="text-align: right;">56.39</td>
+<td style="text-align: right;">57.23</td>
+<td style="text-align: right;">56.83</td>
+<td style="text-align: right;">52.19</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
@@ -836,7 +994,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">224.77</td>
 <td style="text-align: right;">260.19</td>
 <td style="text-align: right;">64.69</td>
-<td style="text-align: right;">112.85</td>
+<td style="text-align: right;">176.61</td>
+<td style="text-align: right;">97.23</td>
+<td style="text-align: right;">75.93</td>
+<td style="text-align: right;">76.50</td>
+<td style="text-align: right;">91.29</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
@@ -849,7 +1011,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">268.58</td>
 <td style="text-align: right;">287.60</td>
 <td style="text-align: right;">73.56</td>
-<td style="text-align: right;">124.46</td>
+<td style="text-align: right;">226.01</td>
+<td style="text-align: right;">113.90</td>
+<td style="text-align: right;">39.69</td>
+<td style="text-align: right;">39.58</td>
+<td style="text-align: right;">108.71</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4</td>
@@ -862,7 +1028,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">307.10</td>
 <td style="text-align: right;">339.31</td>
 <td style="text-align: right;">43.41</td>
-<td style="text-align: right;">73.95</td>
+<td style="text-align: right;">149.65</td>
+<td style="text-align: right;">51.13</td>
+<td style="text-align: right;">32.44</td>
+<td style="text-align: right;">32.77</td>
+<td style="text-align: right;">63.84</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5</td>
@@ -875,7 +1045,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">237.21</td>
 <td style="text-align: right;">356.50</td>
 <td style="text-align: right;">108.65</td>
-<td style="text-align: right;">31.57</td>
+<td style="text-align: right;">155.44</td>
+<td style="text-align: right;">36.54</td>
+<td style="text-align: right;">49.69</td>
+<td style="text-align: right;">50.78</td>
+<td style="text-align: right;">34.34</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6</td>
@@ -888,7 +1062,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">157.09</td>
 <td style="text-align: right;">372.62</td>
 <td style="text-align: right;">195.36</td>
-<td style="text-align: right;">35.53</td>
+<td style="text-align: right;">170.62</td>
+<td style="text-align: right;">58.96</td>
+<td style="text-align: right;">131.62</td>
+<td style="text-align: right;">132.71</td>
+<td style="text-align: right;">54.60</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7</td>
@@ -901,7 +1079,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">117.23</td>
 <td style="text-align: right;">432.11</td>
 <td style="text-align: right;">257.16</td>
-<td style="text-align: right;">56.26</td>
+<td style="text-align: right;">249.15</td>
+<td style="text-align: right;">89.63</td>
+<td style="text-align: right;">187.53</td>
+<td style="text-align: right;">186.37</td>
+<td style="text-align: right;">86.16</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8</td>
@@ -914,7 +1096,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">280.21</td>
 <td style="text-align: right;">578.64</td>
 <td style="text-align: right;">254.18</td>
-<td style="text-align: right;">134.27</td>
+<td style="text-align: right;">492.44</td>
+<td style="text-align: right;">105.85</td>
+<td style="text-align: right;">35.50</td>
+<td style="text-align: right;">35.74</td>
+<td style="text-align: right;">103.01</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9</td>
@@ -927,7 +1113,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">334.18</td>
 <td style="text-align: right;">764.49</td>
 <td style="text-align: right;">229.43</td>
-<td style="text-align: right;">132.54</td>
+<td style="text-align: right;">258.62</td>
+<td style="text-align: right;">73.72</td>
+<td style="text-align: right;">122.97</td>
+<td style="text-align: right;">123.21</td>
+<td style="text-align: right;">86.06</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">10</td>
@@ -940,7 +1130,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">312.05</td>
 <td style="text-align: right;">935.92</td>
 <td style="text-align: right;">103.12</td>
-<td style="text-align: right;">128.27</td>
+<td style="text-align: right;">377.79</td>
+<td style="text-align: right;">59.22</td>
+<td style="text-align: right;">67.36</td>
+<td style="text-align: right;">64.11</td>
+<td style="text-align: right;">61.26</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">11</td>
@@ -953,7 +1147,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">197.59</td>
 <td style="text-align: right;">1084.38</td>
 <td style="text-align: right;">27.11</td>
-<td style="text-align: right;">112.26</td>
+<td style="text-align: right;">169.33</td>
+<td style="text-align: right;">35.35</td>
+<td style="text-align: right;">57.34</td>
+<td style="text-align: right;">48.98</td>
+<td style="text-align: right;">23.91</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">12</td>
@@ -966,7 +1164,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">222.14</td>
 <td style="text-align: right;">1237.49</td>
 <td style="text-align: right;">27.31</td>
-<td style="text-align: right;">106.55</td>
+<td style="text-align: right;">43.49</td>
+<td style="text-align: right;">22.60</td>
+<td style="text-align: right;">100.23</td>
+<td style="text-align: right;">100.37</td>
+<td style="text-align: right;">27.39</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">13</td>
@@ -979,7 +1181,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">161.39</td>
 <td style="text-align: right;">1320.62</td>
 <td style="text-align: right;">34.12</td>
-<td style="text-align: right;">33.14</td>
+<td style="text-align: right;">122.77</td>
+<td style="text-align: right;">62.88</td>
+<td style="text-align: right;">43.59</td>
+<td style="text-align: right;">46.09</td>
+<td style="text-align: right;">59.28</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">14</td>
@@ -992,7 +1198,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">121.49</td>
 <td style="text-align: right;">1295.47</td>
 <td style="text-align: right;">68.84</td>
-<td style="text-align: right;">70.98</td>
+<td style="text-align: right;">137.36</td>
+<td style="text-align: right;">86.76</td>
+<td style="text-align: right;">90.34</td>
+<td style="text-align: right;">90.04</td>
+<td style="text-align: right;">84.00</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">15</td>
@@ -1005,7 +1215,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">109.30</td>
 <td style="text-align: right;">1182.10</td>
 <td style="text-align: right;">107.31</td>
-<td style="text-align: right;">94.57</td>
+<td style="text-align: right;">221.28</td>
+<td style="text-align: right;">179.16</td>
+<td style="text-align: right;">151.06</td>
+<td style="text-align: right;">145.44</td>
+<td style="text-align: right;">184.10</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">16</td>
@@ -1018,7 +1232,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">205.34</td>
 <td style="text-align: right;">984.24</td>
 <td style="text-align: right;">185.81</td>
-<td style="text-align: right;">138.33</td>
+<td style="text-align: right;">266.93</td>
+<td style="text-align: right;">224.22</td>
+<td style="text-align: right;">250.79</td>
+<td style="text-align: right;">242.97</td>
+<td style="text-align: right;">241.94</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">17</td>
@@ -1031,7 +1249,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">50.79</td>
 <td style="text-align: right;">816.05</td>
 <td style="text-align: right;">202.13</td>
-<td style="text-align: right;">83.22</td>
+<td style="text-align: right;">101.61</td>
+<td style="text-align: right;">16.77</td>
+<td style="text-align: right;">10.07</td>
+<td style="text-align: right;">10.87</td>
+<td style="text-align: right;">27.53</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">18</td>
@@ -1044,7 +1266,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">124.51</td>
 <td style="text-align: right;">614.20</td>
 <td style="text-align: right;">152.49</td>
-<td style="text-align: right;">28.15</td>
+<td style="text-align: right;">224.63</td>
+<td style="text-align: right;">60.69</td>
+<td style="text-align: right;">32.74</td>
+<td style="text-align: right;">35.40</td>
+<td style="text-align: right;">78.08</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">19</td>
@@ -1057,7 +1283,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">151.58</td>
 <td style="text-align: right;">430.55</td>
 <td style="text-align: right;">40.15</td>
-<td style="text-align: right;">47.37</td>
+<td style="text-align: right;">275.33</td>
+<td style="text-align: right;">45.50</td>
+<td style="text-align: right;">10.34</td>
+<td style="text-align: right;">10.25</td>
+<td style="text-align: right;">66.83</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">20</td>
@@ -1070,7 +1300,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">112.82</td>
 <td style="text-align: right;">304.54</td>
 <td style="text-align: right;">82.70</td>
-<td style="text-align: right;">145.42</td>
+<td style="text-align: right;">172.71</td>
+<td style="text-align: right;">89.04</td>
+<td style="text-align: right;">73.17</td>
+<td style="text-align: right;">75.31</td>
+<td style="text-align: right;">89.57</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">21</td>
@@ -1083,7 +1317,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">125.68</td>
 <td style="text-align: right;">245.81</td>
 <td style="text-align: right;">235.67</td>
-<td style="text-align: right;">355.56</td>
+<td style="text-align: right;">210.10</td>
+<td style="text-align: right;">274.57</td>
+<td style="text-align: right;">200.80</td>
+<td style="text-align: right;">206.18</td>
+<td style="text-align: right;">257.20</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">22</td>
@@ -1096,7 +1334,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">226.15</td>
 <td style="text-align: right;">214.10</td>
 <td style="text-align: right;">342.73</td>
-<td style="text-align: right;">423.13</td>
+<td style="text-align: right;">353.63</td>
+<td style="text-align: right;">346.03</td>
+<td style="text-align: right;">314.25</td>
+<td style="text-align: right;">318.85</td>
+<td style="text-align: right;">335.65</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">23</td>
@@ -1109,7 +1351,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">134.07</td>
 <td style="text-align: right;">183.37</td>
 <td style="text-align: right;">424.83</td>
-<td style="text-align: right;">213.03</td>
+<td style="text-align: right;">108.83</td>
+<td style="text-align: right;">141.13</td>
+<td style="text-align: right;">152.20</td>
+<td style="text-align: right;">150.67</td>
+<td style="text-align: right;">138.60</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">24</td>
@@ -1122,7 +1368,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">36.53</td>
 <td style="text-align: right;">145.10</td>
 <td style="text-align: right;">368.19</td>
-<td style="text-align: right;">38.77</td>
+<td style="text-align: right;">79.10</td>
+<td style="text-align: right;">21.26</td>
+<td style="text-align: right;">26.47</td>
+<td style="text-align: right;">26.64</td>
+<td style="text-align: right;">21.98</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">25</td>
@@ -1135,7 +1385,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">48.74</td>
 <td style="text-align: right;">106.85</td>
 <td style="text-align: right;">241.71</td>
-<td style="text-align: right;">50.26</td>
+<td style="text-align: right;">81.39</td>
+<td style="text-align: right;">41.72</td>
+<td style="text-align: right;">45.94</td>
+<td style="text-align: right;">46.08</td>
+<td style="text-align: right;">41.06</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">26</td>
@@ -1148,7 +1402,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">55.15</td>
 <td style="text-align: right;">56.30</td>
 <td style="text-align: right;">149.02</td>
-<td style="text-align: right;">51.73</td>
+<td style="text-align: right;">128.74</td>
+<td style="text-align: right;">66.16</td>
+<td style="text-align: right;">68.36</td>
+<td style="text-align: right;">68.43</td>
+<td style="text-align: right;">67.65</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">27</td>
@@ -1161,7 +1419,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">80.58</td>
 <td style="text-align: right;">20.35</td>
 <td style="text-align: right;">51.23</td>
-<td style="text-align: right;">90.47</td>
+<td style="text-align: right;">151.69</td>
+<td style="text-align: right;">112.81</td>
+<td style="text-align: right;">114.16</td>
+<td style="text-align: right;">114.45</td>
+<td style="text-align: right;">111.95</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">28</td>
@@ -1174,7 +1436,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">28.61</td>
 <td style="text-align: right;">15.24</td>
 <td style="text-align: right;">30.19</td>
-<td style="text-align: right;">31.02</td>
+<td style="text-align: right;">47.54</td>
+<td style="text-align: right;">32.76</td>
+<td style="text-align: right;">24.31</td>
+<td style="text-align: right;">24.35</td>
+<td style="text-align: right;">32.99</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">29</td>
@@ -1187,7 +1453,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">53.10</td>
 <td style="text-align: right;">22.15</td>
 <td style="text-align: right;">20.11</td>
-<td style="text-align: right;">72.01</td>
+<td style="text-align: right;">102.56</td>
+<td style="text-align: right;">66.40</td>
+<td style="text-align: right;">41.54</td>
+<td style="text-align: right;">41.37</td>
+<td style="text-align: right;">67.37</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">30</td>
@@ -1200,7 +1470,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">38.29</td>
 <td style="text-align: right;">35.87</td>
 <td style="text-align: right;">27.18</td>
-<td style="text-align: right;">75.38</td>
+<td style="text-align: right;">90.20</td>
+<td style="text-align: right;">52.25</td>
+<td style="text-align: right;">35.93</td>
+<td style="text-align: right;">36.47</td>
+<td style="text-align: right;">48.93</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">31</td>
@@ -1213,7 +1487,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">25.84</td>
 <td style="text-align: right;">58.23</td>
 <td style="text-align: right;">21.11</td>
-<td style="text-align: right;">35.40</td>
+<td style="text-align: right;">39.77</td>
+<td style="text-align: right;">58.81</td>
+<td style="text-align: right;">44.04</td>
+<td style="text-align: right;">43.36</td>
+<td style="text-align: right;">62.82</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">32</td>
@@ -1226,7 +1504,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">13.01</td>
 <td style="text-align: right;">72.76</td>
 <td style="text-align: right;">33.47</td>
-<td style="text-align: right;">12.65</td>
+<td style="text-align: right;">7.82</td>
+<td style="text-align: right;">26.33</td>
+<td style="text-align: right;">14.34</td>
+<td style="text-align: right;">13.91</td>
+<td style="text-align: right;">29.49</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">33</td>
@@ -1239,7 +1521,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">12.21</td>
 <td style="text-align: right;">82.36</td>
 <td style="text-align: right;">61.04</td>
-<td style="text-align: right;">24.42</td>
+<td style="text-align: right;">13.17</td>
+<td style="text-align: right;">7.26</td>
+<td style="text-align: right;">24.14</td>
+<td style="text-align: right;">23.05</td>
+<td style="text-align: right;">7.89</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">34</td>
@@ -1252,7 +1538,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">19.05</td>
 <td style="text-align: right;">89.62</td>
 <td style="text-align: right;">43.87</td>
-<td style="text-align: right;">29.36</td>
+<td style="text-align: right;">11.80</td>
+<td style="text-align: right;">11.30</td>
+<td style="text-align: right;">22.93</td>
+<td style="text-align: right;">21.69</td>
+<td style="text-align: right;">12.69</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">35</td>
@@ -1265,7 +1555,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">8.27</td>
 <td style="text-align: right;">101.64</td>
 <td style="text-align: right;">39.12</td>
-<td style="text-align: right;">8.08</td>
+<td style="text-align: right;">15.64</td>
+<td style="text-align: right;">22.60</td>
+<td style="text-align: right;">9.25</td>
+<td style="text-align: right;">8.80</td>
+<td style="text-align: right;">20.90</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">36</td>
@@ -1278,7 +1572,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">18.05</td>
 <td style="text-align: right;">107.07</td>
 <td style="text-align: right;">50.13</td>
-<td style="text-align: right;">22.13</td>
+<td style="text-align: right;">17.16</td>
+<td style="text-align: right;">1.53</td>
+<td style="text-align: right;">19.27</td>
+<td style="text-align: right;">19.33</td>
+<td style="text-align: right;">6.75</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">37</td>
@@ -1291,7 +1589,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">8.58</td>
 <td style="text-align: right;">104.94</td>
 <td style="text-align: right;">38.81</td>
-<td style="text-align: right;">23.73</td>
+<td style="text-align: right;">8.23</td>
+<td style="text-align: right;">5.92</td>
+<td style="text-align: right;">10.91</td>
+<td style="text-align: right;">10.83</td>
+<td style="text-align: right;">6.86</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">38</td>
@@ -1304,7 +1606,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">17.62</td>
 <td style="text-align: right;">97.67</td>
 <td style="text-align: right;">13.60</td>
-<td style="text-align: right;">26.21</td>
+<td style="text-align: right;">6.66</td>
+<td style="text-align: right;">10.05</td>
+<td style="text-align: right;">19.99</td>
+<td style="text-align: right;">20.29</td>
+<td style="text-align: right;">14.42</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">39</td>
@@ -1317,7 +1623,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">22.31</td>
 <td style="text-align: right;">92.56</td>
 <td style="text-align: right;">11.96</td>
-<td style="text-align: right;">36.43</td>
+<td style="text-align: right;">14.72</td>
+<td style="text-align: right;">17.35</td>
+<td style="text-align: right;">29.86</td>
+<td style="text-align: right;">31.44</td>
+<td style="text-align: right;">20.54</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">40</td>
@@ -1330,7 +1640,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">11.88</td>
 <td style="text-align: right;">91.08</td>
 <td style="text-align: right;">25.53</td>
-<td style="text-align: right;">10.36</td>
+<td style="text-align: right;">19.53</td>
+<td style="text-align: right;">7.04</td>
+<td style="text-align: right;">7.45</td>
+<td style="text-align: right;">7.06</td>
+<td style="text-align: right;">5.59</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">41</td>
@@ -1343,7 +1657,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">6.08</td>
 <td style="text-align: right;">95.97</td>
 <td style="text-align: right;">17.27</td>
-<td style="text-align: right;">6.52</td>
+<td style="text-align: right;">31.60</td>
+<td style="text-align: right;">18.03</td>
+<td style="text-align: right;">24.14</td>
+<td style="text-align: right;">23.98</td>
+<td style="text-align: right;">17.44</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">42</td>
@@ -1356,7 +1674,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">15.65</td>
 <td style="text-align: right;">88.53</td>
 <td style="text-align: right;">30.20</td>
-<td style="text-align: right;">13.28</td>
+<td style="text-align: right;">25.58</td>
+<td style="text-align: right;">10.79</td>
+<td style="text-align: right;">3.91</td>
+<td style="text-align: right;">3.94</td>
+<td style="text-align: right;">10.10</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">43</td>
@@ -1369,7 +1691,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">12.89</td>
 <td style="text-align: right;">86.80</td>
 <td style="text-align: right;">41.82</td>
-<td style="text-align: right;">17.30</td>
+<td style="text-align: right;">49.05</td>
+<td style="text-align: right;">24.18</td>
+<td style="text-align: right;">11.77</td>
+<td style="text-align: right;">12.32</td>
+<td style="text-align: right;">21.05</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">44</td>
@@ -1382,7 +1708,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">31.51</td>
 <td style="text-align: right;">65.57</td>
 <td style="text-align: right;">19.69</td>
-<td style="text-align: right;">43.46</td>
+<td style="text-align: right;">74.60</td>
+<td style="text-align: right;">37.47</td>
+<td style="text-align: right;">16.43</td>
+<td style="text-align: right;">16.26</td>
+<td style="text-align: right;">36.37</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">45</td>
@@ -1395,7 +1725,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">19.98</td>
 <td style="text-align: right;">56.73</td>
 <td style="text-align: right;">20.12</td>
-<td style="text-align: right;">34.99</td>
+<td style="text-align: right;">39.72</td>
+<td style="text-align: right;">25.22</td>
+<td style="text-align: right;">20.28</td>
+<td style="text-align: right;">20.09</td>
+<td style="text-align: right;">23.90</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">46</td>
@@ -1408,7 +1742,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">26.37</td>
 <td style="text-align: right;">56.95</td>
 <td style="text-align: right;">31.94</td>
-<td style="text-align: right;">65.28</td>
+<td style="text-align: right;">135.50</td>
+<td style="text-align: right;">58.29</td>
+<td style="text-align: right;">27.19</td>
+<td style="text-align: right;">26.92</td>
+<td style="text-align: right;">51.86</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">47</td>
@@ -1421,7 +1759,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">44.33</td>
 <td style="text-align: right;">78.75</td>
 <td style="text-align: right;">38.82</td>
-<td style="text-align: right;">58.52</td>
+<td style="text-align: right;">56.64</td>
+<td style="text-align: right;">72.61</td>
+<td style="text-align: right;">83.70</td>
+<td style="text-align: right;">82.80</td>
+<td style="text-align: right;">69.64</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">48</td>
@@ -1434,7 +1776,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">26.37</td>
 <td style="text-align: right;">73.50</td>
 <td style="text-align: right;">46.93</td>
-<td style="text-align: right;">34.40</td>
+<td style="text-align: right;">58.52</td>
+<td style="text-align: right;">48.14</td>
+<td style="text-align: right;">33.89</td>
+<td style="text-align: right;">33.81</td>
+<td style="text-align: right;">41.29</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">49</td>
@@ -1447,7 +1793,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">47.19</td>
 <td style="text-align: right;">69.77</td>
 <td style="text-align: right;">55.58</td>
-<td style="text-align: right;">58.96</td>
+<td style="text-align: right;">32.43</td>
+<td style="text-align: right;">53.84</td>
+<td style="text-align: right;">68.60</td>
+<td style="text-align: right;">68.67</td>
+<td style="text-align: right;">60.51</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">50</td>
@@ -1460,7 +1810,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">62.37</td>
 <td style="text-align: right;">40.26</td>
 <td style="text-align: right;">42.80</td>
-<td style="text-align: right;">93.08</td>
+<td style="text-align: right;">47.06</td>
+<td style="text-align: right;">92.52</td>
+<td style="text-align: right;">100.44</td>
+<td style="text-align: right;">100.68</td>
+<td style="text-align: right;">98.45</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">51</td>
@@ -1473,7 +1827,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">42.48</td>
 <td style="text-align: right;">722.13</td>
 <td style="text-align: right;">62.49</td>
-<td style="text-align: right;">39.69</td>
+<td style="text-align: right;">102.69</td>
+<td style="text-align: right;">37.77</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: right;">52.61</td>
+<td style="text-align: right;">40.17</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">52</td>
@@ -1486,7 +1844,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">52.97</td>
 <td style="text-align: right;">1459.88</td>
 <td style="text-align: right;">23.20</td>
-<td style="text-align: right;">99.14</td>
+<td style="text-align: right;">124.59</td>
+<td style="text-align: right;">103.40</td>
+<td style="text-align: right;">164.08</td>
+<td style="text-align: right;">164.13</td>
+<td style="text-align: right;">102.32</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">53</td>
@@ -1499,7 +1861,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">87.98</td>
 <td style="text-align: right;">2395.19</td>
 <td style="text-align: right;">71.06</td>
-<td style="text-align: right;">54.57</td>
+<td style="text-align: right;">72.77</td>
+<td style="text-align: right;">50.63</td>
+<td style="text-align: right;">40.78</td>
+<td style="text-align: right;">40.69</td>
+<td style="text-align: right;">51.47</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">54</td>
@@ -1512,7 +1878,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">126.89</td>
 <td style="text-align: right;">232.01</td>
 <td style="text-align: right;">67.55</td>
-<td style="text-align: right;">114.97</td>
+<td style="text-align: right;">142.07</td>
+<td style="text-align: right;">122.85</td>
+<td style="text-align: right;">78.92</td>
+<td style="text-align: right;">78.92</td>
+<td style="text-align: right;">120.71</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">55</td>
@@ -1525,7 +1895,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">156.45</td>
 <td style="text-align: right;">243.03</td>
 <td style="text-align: right;">31.62</td>
-<td style="text-align: right;">153.09</td>
+<td style="text-align: right;">210.30</td>
+<td style="text-align: right;">155.13</td>
+<td style="text-align: right;">111.90</td>
+<td style="text-align: right;">110.97</td>
+<td style="text-align: right;">163.34</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">56</td>
@@ -1538,7 +1912,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">85.56</td>
 <td style="text-align: right;">225.15</td>
 <td style="text-align: right;">76.20</td>
-<td style="text-align: right;">30.75</td>
+<td style="text-align: right;">70.34</td>
+<td style="text-align: right;">17.43</td>
+<td style="text-align: right;">7.41</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">19.96</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">57</td>
@@ -1551,7 +1929,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">75.87</td>
 <td style="text-align: right;">228.97</td>
 <td style="text-align: right;">51.21</td>
-<td style="text-align: right;">17.90</td>
+<td style="text-align: right;">71.11</td>
+<td style="text-align: right;">13.91</td>
+<td style="text-align: right;">10.69</td>
+<td style="text-align: right;">11.01</td>
+<td style="text-align: right;">13.58</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">58</td>
@@ -1564,7 +1946,11 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 <td style="text-align: right;">107.11</td>
 <td style="text-align: right;">279.28</td>
 <td style="text-align: right;">46.43</td>
-<td style="text-align: right;">37.60</td>
+<td style="text-align: right;">50.52</td>
+<td style="text-align: right;">36.20</td>
+<td style="text-align: right;">41.01</td>
+<td style="text-align: right;">41.14</td>
+<td style="text-align: right;">36.57</td>
 </tr>
 </tbody>
 </table>
@@ -1649,10 +2035,38 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 </tr>
 <tr class="even">
 <td style="text-align: left;">M9</td>
-<td style="text-align: right;">38.77</td>
+<td style="text-align: right;">57.82</td>
 <td style="text-align: right;">NA</td>
-<td style="text-align: right;">74.78</td>
-<td style="text-align: right;">115.86</td>
+<td style="text-align: right;">120.87</td>
+<td style="text-align: right;">175.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">M10</td>
+<td style="text-align: right;">35.30</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">66.68</td>
+<td style="text-align: right;">101.93</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">M11</td>
+<td style="text-align: right;">34.88</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">64.53</td>
+<td style="text-align: right;">98.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">M12</td>
+<td style="text-align: right;">34.86</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">64.36</td>
+<td style="text-align: right;">98.10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">M13</td>
+<td style="text-align: right;">35.34</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">67.49</td>
+<td style="text-align: right;">101.63</td>
 </tr>
 </tbody>
 </table>
