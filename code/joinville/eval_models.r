@@ -21,110 +21,111 @@ results_M11 <- readRDS("results/joinville/results_M11.rds")
 results_M12 <- readRDS("results/joinville/results_M12.rds")
 results_M13 <- readRDS("results/joinville/results_M13.rds")
 start_week <- 514
+len_windows <- 8
 
 plots_M0 <- lapply(1:length(results_M0$data_inla), function(i) {
   plot_pred_by_window(results_M0$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M0_zoom <- lapply(1:length(results_M0$data_inla), function(i) {
   data_i <- results_M0$data_inla[[i]] |> filter(data_iniSE >= results_M0$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M1 <- lapply(1:length(results_M1$data_inla), function(i) {
   plot_pred_by_window(results_M1$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M1_zoom <- lapply(1:length(results_M1$data_inla), function(i) {
   data_i <- results_M1$data_inla[[i]] |> filter(data_iniSE >= results_M1$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M2 <- lapply(1:length(results_M2$data_inla), function(i) {
   plot_pred_by_window(results_M2$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M2_zoom <- lapply(1:length(results_M2$data_inla), function(i) {
   data_i <- results_M2$data_inla[[i]] |> filter(data_iniSE >= results_M2$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M3 <- lapply(1:length(results_M3$data_inla), function(i) {
   plot_pred_by_window(results_M3$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M3_zoom <- lapply(1:length(results_M3$data_inla), function(i) {
   data_i <- results_M3$data_inla[[i]] |> filter(data_iniSE >= results_M3$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M4 <- lapply(1:length(results_M4$data_inla), function(i) {
   plot_pred_by_window(results_M4$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M4_zoom <- lapply(1:length(results_M4$data_inla), function(i) {
   data_i <- results_M4$data_inla[[i]] |> filter(data_iniSE >= results_M4$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M5 <- lapply(1:length(results_M5$data_inla), function(i) {
   plot_pred_by_window(results_M5$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M5_zoom <- lapply(1:length(results_M5$data_inla), function(i) {
   data_i <- results_M5$data_inla[[i]] |> filter(data_iniSE >= results_M5$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M6 <- lapply(1:length(results_M6$data_inla), function(i) {
   plot_pred_by_window(results_M6$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M6_zoom <- lapply(1:length(results_M6$data_inla), function(i) {
   data_i <- results_M6$data_inla[[i]] |> filter(data_iniSE >= results_M6$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M7 <- lapply(1:length(results_M7$data_inla), function(i) {
   plot_pred_by_window(results_M7$data_inla[[i]], threshold_week = start_week + (i - 1))
 })
 plots_M7_zoom <- lapply(1:length(results_M7$data_inla), function(i) {
   data_i <- results_M7$data_inla[[i]] |> filter(data_iniSE >= results_M7$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
-p <- 10
+p <- 8
 plots_M8 <- lapply(1:length(results_M8), function(i) {
   plot_pred_by_window(results_M8[[i]], threshold_week = start_week - (p+1) + (i - 1))
 })
 plots_M8_zoom <- lapply(1:length(results_M8), function(i) {
   data_i <- results_M8[[i]] |> filter(data_iniSE >= results_M8[[i]]$data_iniSE[start_week - (p+1) - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M9 <- lapply(1:length(results_M9), function(i) {
   data_i <- results_M9[[i]]
-  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
 })
 plots_M9_zoom <- lapply(1:length(results_M9), function(i) {
   data_i <- results_M9[[i]] |> filter(data_iniSE >= results_M9[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M10 <- lapply(1:length(results_M10), function(i) {
   data_i <- results_M10[[i]]
-  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
 })
 plots_M10_zoom <- lapply(1:length(results_M10), function(i) {
   data_i <- results_M10[[i]] |> filter(data_iniSE >= results_M10[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M11 <- lapply(1:length(results_M11), function(i) {
   data_i <- results_M11[[i]]
-  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
 })
 plots_M11_zoom <- lapply(1:length(results_M11), function(i) {
   data_i <- results_M11[[i]] |> filter(data_iniSE >= results_M11[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M12 <- lapply(1:length(results_M12), function(i) {
   data_i <- results_M12[[i]]
-  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
 })
 plots_M12_zoom <- lapply(1:length(results_M12), function(i) {
   data_i <- results_M12[[i]] |> filter(data_iniSE >= results_M12[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 plots_M13 <- lapply(1:length(results_M13), function(i) {
   data_i <- results_M13[[i]]
-  plot_pred_by_window(data_i, threshold_week = start_week - 7 + (i - 1))
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
 })
 plots_M13_zoom <- lapply(1:length(results_M13), function(i) {
   data_i <- results_M13[[i]] |> filter(data_iniSE >= results_M13[[i]]$data_iniSE[start_week - 59 + (i - 1)])
-  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - 3)
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
 })
 
 saveRDS(plots_M0, file = "results/joinville/plots_pred_M0.rds")
@@ -157,20 +158,20 @@ saveRDS(plots_M11_zoom, file = "results/joinville/plots_pred_M11_zoom.rds")
 saveRDS(plots_M12_zoom, file = "results/joinville/plots_pred_M12_zoom.rds")
 saveRDS(plots_M13_zoom, file = "results/joinville/plots_pred_M13_zoom.rds")
 
-pred_M0 <- get_pred(results_M0$data_inla)
-pred_M1 <- get_pred(results_M1$data_inla)
-pred_M2 <- get_pred(results_M2$data_inla)
-pred_M3 <- get_pred(results_M3$data_inla)
-pred_M4 <- get_pred(results_M4$data_inla)
-pred_M5 <- get_pred(results_M5$data_inla)
-pred_M6 <- get_pred(results_M6$data_inla)
-pred_M7 <- get_pred(results_M7$data_inla)
-pred_M8 <- get_pred(results_M8)
-pred_M9 <- get_pred(results_M9)
-pred_M10 <- get_pred(results_M10)
-pred_M11 <- get_pred(results_M11)
-pred_M12 <- get_pred(results_M12)
-pred_M13 <- get_pred(results_M13)
+pred_M0 <- get_pred(results_M0$data_inla, len_windows = len_windows)
+pred_M1 <- get_pred(results_M1$data_inla, len_windows = len_windows)
+pred_M2 <- get_pred(results_M2$data_inla, len_windows = len_windows)
+pred_M3 <- get_pred(results_M3$data_inla, len_windows = len_windows)
+pred_M4 <- get_pred(results_M4$data_inla, len_windows = len_windows)
+pred_M5 <- get_pred(results_M5$data_inla, len_windows = len_windows)
+pred_M6 <- get_pred(results_M6$data_inla, len_windows = len_windows)
+pred_M7 <- get_pred(results_M7$data_inla, len_windows = len_windows)
+pred_M8 <- get_pred(results_M8, len_windows = len_windows)
+pred_M9 <- get_pred(results_M9, len_windows = len_windows)
+pred_M10 <- get_pred(results_M10, len_windows = len_windows)
+pred_M11 <- get_pred(results_M11, len_windows = len_windows)
+pred_M12 <- get_pred(results_M12, len_windows = len_windows)
+pred_M13 <- get_pred(results_M13, len_windows = len_windows)
 
 bcis_M0 <- compute_bcis(results_M0$fit)
 bcis_M1 <- compute_bcis(results_M1$fit)
@@ -262,31 +263,31 @@ wis_M8 <- mean(sapply(results_M8, function(pred) {
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
 wis_M9 <- mean(sapply(results_M9, function(pred) {
-  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
   pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
 wis_M10 <- mean(sapply(results_M10, function(pred) {
-  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
   pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
 wis_M11 <- mean(sapply(results_M11, function(pred) {
-  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
   pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
 wis_M12 <- mean(sapply(results_M12, function(pred) {
-  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
   pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
 }))
 wis_M13 <- mean(sapply(results_M13, function(pred) {
-  rows_filter <- (nrow(pred) - 2):(nrow(pred))
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
   pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
   obs_values <- pred[rows_filter, "obs"]
   scoringutils::wis(obs_values, pred_matrix, quantiles)
@@ -337,6 +338,21 @@ rmse_id_M11 <- rmse_by_col(pred_M11, "index")
 rmse_id_M12 <- rmse_by_col(pred_M12, "index")
 rmse_id_M13 <- rmse_by_col(pred_M13, "index")
 
+mape_id_M0 <- mape_by_col(pred_M0, "index")
+mape_id_M1 <- mape_by_col(pred_M1, "index")
+mape_id_M2 <- mape_by_col(pred_M2, "index")
+mape_id_M3 <- mape_by_col(pred_M3, "index")
+mape_id_M4 <- mape_by_col(pred_M4, "index")
+mape_id_M5 <- mape_by_col(pred_M5, "index")
+mape_id_M6 <- mape_by_col(pred_M6, "index")
+mape_id_M7 <- mape_by_col(pred_M7, "index")
+mape_id_M8 <- mape_by_col(pred_M8, "index")
+mape_id_M9 <- mape_by_col(pred_M9, "index")
+mape_id_M10 <- mape_by_col(pred_M10, "index")
+mape_id_M11 <- mape_by_col(pred_M11, "index")
+mape_id_M12 <- mape_by_col(pred_M12, "index")
+mape_id_M13 <- mape_by_col(pred_M13, "index")
+
 mae_window_M0 <- mae_by_col(pred_M0, "window")
 mae_window_M1 <- mae_by_col(pred_M1, "window")
 mae_window_M2 <- mae_by_col(pred_M2, "window")
@@ -367,6 +383,21 @@ rmse_window_M11 <- rmse_by_col(pred_M11, "window")
 rmse_window_M12 <- rmse_by_col(pred_M12, "window")
 rmse_window_M13 <- rmse_by_col(pred_M13, "window")
 
+mape_window_M0 <- mape_by_col(pred_M0, "window")
+mape_window_M1 <- mape_by_col(pred_M1, "window")
+mape_window_M2 <- mape_by_col(pred_M2, "window")
+mape_window_M3 <- mape_by_col(pred_M3, "window")
+mape_window_M4 <- mape_by_col(pred_M4, "window")
+mape_window_M5 <- mape_by_col(pred_M5, "window")
+mape_window_M6 <- mape_by_col(pred_M6, "window")
+mape_window_M7 <- mape_by_col(pred_M7, "window")
+mape_window_M8 <- mape_by_col(pred_M8, "window")
+mape_window_M9 <- mape_by_col(pred_M9, "window")
+mape_window_M10 <- mape_by_col(pred_M10, "window")
+mape_window_M11 <- mape_by_col(pred_M11, "window")
+mape_window_M12 <- mape_by_col(pred_M12, "window")
+mape_window_M13 <- mape_by_col(pred_M13, "window")
+
 mae_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases))
 mae_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases))
 mae_M2 <- mean(abs(pred_M2$obs - pred_M2$predicted_cases))
@@ -396,6 +427,21 @@ rmse_M10 <- sqrt(mean((pred_M10$obs - pred_M10$predicted_cases)^2))
 rmse_M11 <- sqrt(mean((pred_M11$obs - pred_M11$predicted_cases)^2))
 rmse_M12 <- sqrt(mean((pred_M12$obs - pred_M12$predicted_cases)^2))
 rmse_M13 <- sqrt(mean((pred_M13$obs - pred_M13$predicted_cases)^2))
+
+mape_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases) / pred_M0$obs) * 100
+mape_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases) / pred_M1$obs) * 100
+mape_M2 <- mean(abs(pred_M2$obs - pred_M2$predicted_cases) / pred_M2$obs) * 100
+mape_M3 <- mean(abs(pred_M3$obs - pred_M3$predicted_cases) / pred_M3$obs) * 100
+mape_M4 <- mean(abs(pred_M4$obs - pred_M4$predicted_cases) / pred_M4$obs) * 100
+mape_M5 <- mean(abs(pred_M5$obs - pred_M5$predicted_cases) / pred_M5$obs) * 100
+mape_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases) / pred_M6$obs) * 100
+mape_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases) / pred_M7$obs) * 100
+mape_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases) / pred_M8$obs) * 100
+mape_M9 <- mean(abs(pred_M9$obs - pred_M9$predicted_cases) / pred_M9$obs) * 100
+mape_M10 <- mean(abs(pred_M10$obs - pred_M10$predicted_cases) / pred_M10$obs) * 100
+mape_M11 <- mean(abs(pred_M11$obs - pred_M11$predicted_cases) / pred_M11$obs) * 100
+mape_M12 <- mean(abs(pred_M12$obs - pred_M12$predicted_cases) / pred_M12$obs) * 100
+mape_M13 <- mean(abs(pred_M13$obs - pred_M13$predicted_cases) / pred_M13$obs) * 100
 
 mae_id <- rbind(
   cbind(model = "M0", mae_id_M0),
@@ -489,11 +535,58 @@ rmse_window <- rbind(
   ) %>%
   write_csv("results/joinville/rmse_by_window.csv")
 
+mape_id <- rbind(
+  cbind(model = "M0", mape_id_M0),
+  cbind(model = "M1", mape_id_M1),
+  cbind(model = "M2", mape_id_M2),
+  cbind(model = "M3", mape_id_M3),
+  cbind(model = "M4", mape_id_M4),
+  cbind(model = "M5", mape_id_M5),
+  cbind(model = "M6", mape_id_M6),
+  cbind(model = "M7", mape_id_M7),
+  cbind(model = "M8", mape_id_M8),
+  cbind(model = "M9", mape_id_M9),
+  cbind(model = "M10", mape_id_M10),
+  cbind(model = "M11", mape_id_M11),
+  cbind(model = "M12", mape_id_M12),
+  cbind(model = "M13", mape_id_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mape,
+    names_prefix = "mape_"
+  ) %>%
+  write_csv("results/joinville/mape_by_id.csv")
+
+mape_window <- rbind(
+  cbind(model = "M0", mape_window_M0),
+  cbind(model = "M1", mape_window_M1),
+  cbind(model = "M2", mape_window_M2),
+  cbind(model = "M3", mape_window_M3),
+  cbind(model = "M4", mape_window_M4),
+  cbind(model = "M5", mape_window_M5),
+  cbind(model = "M6", mape_window_M6),
+  cbind(model = "M7", mape_window_M7),
+  cbind(model = "M8", mape_window_M8),
+  cbind(model = "M9", mape_window_M9),
+  cbind(model = "M10", mape_window_M10),
+  cbind(model = "M11", mape_window_M11),
+  cbind(model = "M12", mape_window_M12),
+  cbind(model = "M13", mape_window_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mape,
+    names_prefix = "mape_"
+  ) %>%
+  write_csv("results/joinville/mape_by_window.csv")
+
 summary_metrics <- data.frame(
   model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13"),
   wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8, wis_M9, wis_M10, wis_M11, wis_M12, wis_M13),
   waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8, waic_M9, waic_M10, waic_M11, waic_M12, waic_M13),
   mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8, mae_M9, mae_M10, mae_M11, mae_M12, mae_M13),
-  rmse = c(rmse_M0, rmse_M1, rmse_M2, rmse_M3, rmse_M4, rmse_M5, rmse_M6, rmse_M7, rmse_M8, rmse_M9, rmse_M10, rmse_M11, rmse_M12, rmse_M13)
+  rmse = c(rmse_M0, rmse_M1, rmse_M2, rmse_M3, rmse_M4, rmse_M5, rmse_M6, rmse_M7, rmse_M8, rmse_M9, rmse_M10, rmse_M11, rmse_M12, rmse_M13),
+  mape = c(mape_M0, mape_M1, mape_M2, mape_M3, mape_M4, mape_M5, mape_M6, mape_M7, mape_M8, mape_M9, mape_M10, mape_M11, mape_M12, mape_M13)
 ) %>%
   write_csv("results/joinville/summary_metrics.csv")

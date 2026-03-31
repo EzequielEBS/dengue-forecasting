@@ -1,7 +1,10 @@
-run_inla_model <- function(data, outcome, threshold_week, formula, family, quantiles = c(0.025, 0.975)) {
+run_inla_model <- function(data, outcome, threshold_week, formula, family, 
+                            quantiles = c(0.025, 0.975),
+                            len_windows = 3
+                          ) {
   train_data <- data[data$epiweek <= data$epiweek[threshold_week], ]
   test_data <- data[data$epiweek > data$epiweek[threshold_week] &
-                    data$epiweek <= data$epiweek[threshold_week + 3], ]
+                    data$epiweek <= data$epiweek[threshold_week + len_windows], ]
   obs_values <- c(train_data[[outcome]], test_data[[outcome]])
   test_data[[outcome]] <- NA
   data_inla <- rbind(train_data, test_data)
@@ -131,8 +134,10 @@ plot_coef <- function(bcis, cova = T) {
 
 compute_wis <- function(fit, data, outcome, quantile_level) {
   obs_values <- data[[outcome]][which(is.na(fit$.args$data[[outcome]]))]
-  pred <- fit$summary.fitted.values[(nrow(fit$summary.fitted.values) - 2):nrow(fit$summary.fitted.values), 
-                                    3:(ncol(fit$summary.fitted.values) - 1)]
+  len_windows <- length(obs_values)
+  pred <- fit$summary.fitted.values[
+              (nrow(fit$summary.fitted.values) - len_windows + 1):nrow(fit$summary.fitted.values), 
+              3:(ncol(fit$summary.fitted.values) - 1)]
   pred <- as.matrix(pred)
   scoringutils::wis(obs_values, pred, quantile_level)
 }
@@ -142,6 +147,13 @@ mae_by_col <- function(data_pred, col_name) {
     group_by(.data[[col_name]]) %>%
     summarise(mae = mean(abs(obs - predicted_cases)))
   return(mae_values)
+}
+
+mape_by_col <- function(data_pred, col_name) {
+  mape_values <- data_pred %>%
+    group_by(.data[[col_name]]) %>%
+    summarise(mape = mean(abs(obs - predicted_cases) / (obs)) * 100)
+  return(mape_values)
 }
 
 rmse_by_col <- function(data_pred, col_name) {
@@ -180,9 +192,11 @@ plot_random_effects <- function(fit, name, name_group = NULL){
   return(plot)
 }
 
-run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)) {
+run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975),
+                   len_windows = 3, data, start_week
+                  ) {
   cl <- makeCluster(15)
-  clusterExport(cl, varlist = c("dengue_climate_joinville", 
+  clusterExport(cl, varlist = c("data", 
                                 "ar_p", 
                                 "p", 
                                 "start_week",
@@ -195,8 +209,9 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
     library(dplyr)
     library(tidyr)
   })
-  pred_window <- pblapply(cl = cl, start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
-    y <- log(dengue_climate_joinville[dengue_climate_joinville$time_id <= i, "casos"]$casos + 1)
+  pred_window <- pblapply(cl = cl, start_week:(nrow(data) - len_windows), 
+    function(i) {
+    y <- log(data[data$time_id <= i, "casos"]$casos + 1)
     X <- embed(y, p + 1)
     
     standata <- list(
@@ -204,7 +219,7 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
       p = p,
       y = X[,1],
       X = X[,-1, drop = FALSE],
-      H = 3
+      H = len_windows
     )
     
     fit <- ar_p$sample(
@@ -217,8 +232,8 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
     
     pred <- ar_p$generate_quantities(
       fit,
-      data = standata,
-      parallel_chains = 4
+      data = standata
+      # parallel_chains = 4
     )
     
     pred_insample <- posterior::as_draws_df(pred$draws("y_rep"))
@@ -258,8 +273,9 @@ run_ar <- function(p, quantiles = c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95
       t() %>%
       as.data.frame()
     colnames(quant) <- paste0(quantiles, "quant")
-    data <- dengue_climate_joinville %>%
-      filter(time_id > p & time_id <= i + 3) %>%
+    data <- data %>%
+      filter(time_id > p & time_id <= i + len_windows
+        ) %>%
       select(data_iniSE, casos) %>%
       cbind(pred_summ) %>%
       cbind(quant) %>%
@@ -291,7 +307,9 @@ sel_par_sarimax <- function(data_i, xreg, stepwise = F) {
   return(best_par)
 }
 
-run_sarimax <- function(data, cov_name, w, par) {
+run_sarimax <- function(data, cov_name, w, par, method = "CSS",
+                      len_windows = 3
+                      ) {
   data_i <- ts(data[data$time_id <= w, ],
                 frequency = 52, 
                 start = c(2015, 9)
@@ -304,16 +322,18 @@ run_sarimax <- function(data, cov_name, w, par) {
                 frequency = 52, 
                 start = c(2015, 9)
     )
-    xnew <- data[data$time_id > w & data$time_id <= w + 3, cov_name]
+    xnew <- data[data$time_id > w & data$time_id <= w + len_windows,
+                  cov_name]
   }
   y <- log(data_i[, "casos"] + 100)
-  fit <- TSA::arima(y, order = c(par$p, par$d, par$q), 
+  fit <- forecast::Arima(y, order = c(par$p, par$d, par$q), 
                     seasonal = c(par$P, par$D, par$Q),
-                    xreg = xreg
+                    xreg = xreg,
+                    method = method
                   )
   resids <- residuals(fit)
   pred_insample <- as.numeric(y) - as.numeric(resids)
-  pred_outsample <- predict(fit, n.ahead = 3,
+  pred_outsample <- predict(fit, n.ahead = len_windows,
                   newxreg = xnew
                 )
   e95 <- qnorm(1-0.05/2,0,1)  

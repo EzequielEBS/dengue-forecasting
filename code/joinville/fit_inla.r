@@ -35,6 +35,7 @@ dengue_climate_joinville <- read_csv("data/joinville/dengue_climate_joinville_in
 
 quantiles <- c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
 start_week <- 514
+len_windows <- 8
 
 # Model 0
 f0 <- casos ~ 1 + 
@@ -42,13 +43,15 @@ f0 <- casos ~ 1 +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family0 <- "poisson"
-results_M0 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M0 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f0, 
                         family = family0,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -62,13 +65,15 @@ f1 <- casos ~ 1 +
       group = year_id, control.group = list(model = "ar1"))   
 family1 <- "poisson"
 
-results_M1 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M1 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f1, 
                         family = family1,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -81,13 +86,15 @@ f2 <- casos ~ 1 +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family2 <- "poisson"
-results_M2 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M2 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville,
                         outcome = "casos", 
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f2, 
                         family = family2,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -100,13 +107,15 @@ f3 <- casos ~ 1 +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family3 <- "poisson"
-results_M3 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M3 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville,
                         outcome = "casos", 
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f3, 
                         family = family3,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -119,13 +128,15 @@ f4 <- casos ~ 1 +
     f(week_id, model = "rw1", constr = TRUE, cyclic = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family4 <- "poisson"
-results_M4 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M4 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f4, 
                         family = family4,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -138,13 +149,15 @@ f5 <- casos ~ 1 +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family5 <- "poisson"
-results_M5 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M5 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows),
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i, 
                         formula = f5, 
                         family = family5,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -158,13 +171,15 @@ f6 <- casos ~ 1 +
     f(week_id, model = "rw1", cyclic = TRUE, constr = TRUE,
       group = year_id, control.group = list(model = "ar1"))
 family6 <- "poisson"
-results_M6 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M6 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows), 
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f6, 
                         family = family6,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
@@ -191,13 +206,15 @@ f7 <- casos ~ 1 +
       )
     )
 family7 <- "nbinomial"
-results_M7 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - 3), function(i) {
+results_M7 <- transpose(pblapply(start_week:(nrow(dengue_climate_joinville) - len_windows), 
+function(i) {
   fit <- run_inla_model(dengue_climate_joinville, 
                         outcome = "casos",
-                        trashold_week = i, 
+                        threshold_week = i,
                         formula = f7, 
                         family = family7,
-                        quantiles = quantiles
+                        quantiles = quantiles,
+                        len_windows = len_windows
                       )
   return(fit)
 }))
