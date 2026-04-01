@@ -646,12 +646,12 @@ v_t &amp;\sim \text{Normal}(0, \sigma^2_v).
 <p><img src="figures/coef_M7.png" class="img-fluid"></p>
 </section>
 </section>
-<section id="model-8-ar10" class="level1">
-<h1>Model 8: AR(10)</h1>
+<section id="model-8-ar8" class="level1">
+<h1>Model 8: AR(8)</h1>
 <ul>
 <li>First step: transform the response variable by taking the logarithm of the observed cases plus one, i.e., <span class="math inline">\(Y_t = \log(\text{casos}_t + 1)\)</span>.</li>
-<li>Second step: fit an AR(10) model to the transformed response variable, i.e., <span class="math display">\[\begin{align*}
-Y_t &amp;= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
+<li>Second step: fit an AR(8) model to the transformed response variable, i.e., <span class="math display">\[\begin{align*}
+Y_t &amp;= \alpha + \sum_{i=1}^{8} \phi_i Y_{t-i} + \epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2).
 \end{align*}\]</span></li>
 </ul>
@@ -674,13 +674,13 @@ Y_t &amp;= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
 </div>
 </div>
 </section>
-<section id="model-9-sarima11110052" class="level1">
-<h1>Model 9: SARIMA(1,1,1)(1,0,0)[52]</h1>
+<section id="model-9-sarima11010052" class="level1">
+<h1>Model 9: SARIMA(1,1,0)(1,0,0)[52]</h1>
 <ul>
-<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 1)\)</span></li>
+<li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
 Y_t &amp;= \alpha + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &amp;= (1 + \theta_1 B)\epsilon_t, \\
+(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &amp;= \epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
 \end{align*}\]</span></li>
 </ul>
@@ -704,14 +704,14 @@ Y_t &amp;= \alpha + \eta_t, \\
 </div>
 </div>
 </section>
-<section id="model-10-sarimax11110052" class="level1">
-<h1>Model 10: SARIMAX(1,1,1)(1,0,0)[52]</h1>
+<section id="model-10-sarimax01100152" class="level1">
+<h1>Model 10: SARIMAX(0,1,1)(0,0,1)[52]</h1>
 <ul>
 <li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
 <li><span class="math inline">\(X_t = \text{temp\_avg\_8w}_t\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
 Y_t &amp;= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &amp;= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &amp;= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
 \end{align*}\]</span></li>
 </ul>
@@ -735,14 +735,14 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 </div>
 </div>
 </section>
-<section id="model-11-sarimax11110052" class="level1">
-<h1>Model 11: SARIMAX(1,1,1)(1,0,0)[52]</h1>
+<section id="model-11-sarimax01100152" class="level1">
+<h1>Model 11: SARIMAX(0,1,1)(0,0,1)[52]</h1>
 <ul>
 <li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
 <li><span class="math inline">\(X_t = [\text{temp\_avg\_8w}_t, \text{precip\_avg\_52w}_t]\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
 Y_t &amp;= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &amp;= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &amp;= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
 \end{align*}\]</span></li>
 </ul>
@@ -766,14 +766,14 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 </div>
 </div>
 </section>
-<section id="model-12-sarimax11110052" class="level1">
-<h1>Model 12: SARIMAX(1,1,1)(1,0,0)[52]</h1>
+<section id="model-12-sarimax01100152" class="level1">
+<h1>Model 12: SARIMAX(0,1,1)(0,0,1)[52]</h1>
 <ul>
 <li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
 <li><span class="math inline">\(X_t = [\text{temp\_avg\_8w}_t, \text{umid\_avg\_12w}_t]\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
 Y_t &amp;= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &amp;= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &amp;= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
 \end{align*}\]</span></li>
 </ul>
@@ -797,14 +797,14 @@ Y_t &amp;= X_t \beta + \eta_t, \\
 </div>
 </div>
 </section>
-<section id="model-13-sarimax11100152" class="level1">
-<h1>Model 13: SARIMAX(1,1,1)(0,0,1)[52]</h1>
+<section id="model-13-sarimax11000152" class="level1">
+<h1>Model 13: SARIMAX(1,1,0)(0,0,1)[52]</h1>
 <ul>
 <li><span class="math inline">\(Y_t = \log(\text{casos}_t + 100)\)</span></li>
 <li><span class="math inline">\(X_t = \text{temp\_avg\_12w}_t\)</span></li>
 <li>The model is defined as follows: <span class="math display">\[\begin{align*}
 Y_t &amp;= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - B)\eta_t &amp;= (1 + \theta_1 B)(1 + \Theta_1 B^{52})\epsilon_t, \\
+(1-\phi_1 B)(1 - B)\eta_t &amp;= (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &amp;\sim \text{Normal}(0, \sigma^2),
 \end{align*}\]</span></li>
 </ul>

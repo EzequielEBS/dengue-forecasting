@@ -298,12 +298,12 @@ print(plots_year_effect_M7[[length(plots_year_effect_M7)]])
 
 ![](figures/coef_M7.png)
 
-# Model 8: AR(10)
+# Model 8: AR(8)
 
 - First step: transform the response variable by taking the logarithm of the observed cases plus one, i.e., $Y_t = \log(\text{casos}_t + 1)$.
-- Second step: fit an AR(10) model to the transformed response variable, i.e.,
+- Second step: fit an AR(8) model to the transformed response variable, i.e.,
 \begin{align*}
-Y_t &= \alpha + \sum_{i=1}^{10} \phi_i Y_{t-i} + \epsilon_t, \\
+Y_t &= \alpha + \sum_{i=1}^{8} \phi_i Y_{t-i} + \epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2).
 \end{align*}
 
@@ -312,13 +312,13 @@ print(plots_pred_M8[[length(plots_pred_M8)]])
 print(plots_pred_M8_zoom[[length(plots_pred_M8_zoom)]])
 ```
 
-# Model 9: SARIMA(1,1,1)(1,0,0)[52]
+# Model 9: SARIMA(1,1,0)(1,0,0)[52]
 
-- $Y_t = \log(\text{casos}_t + 1)$
+- $Y_t = \log(\text{casos}_t + 100)$
 - The model is defined as follows:
 \begin{align*}
 Y_t &= \alpha + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &= (1 + \theta_1 B)\epsilon_t, \\
+(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &= \epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2),
 \end{align*}
 
@@ -329,14 +329,14 @@ print(plots_pred_M9[[length(plots_pred_M9)]])
 print(plots_pred_M9_zoom[[length(plots_pred_M9_zoom)]])
 ```
 
-# Model 10: SARIMAX(1,1,1)(1,0,0)[52]
+# Model 10: SARIMAX(0,1,1)(0,0,1)[52]
 
 - $Y_t = \log(\text{casos}_t + 100)$
 - $X_t = \text{temp\_avg\_8w}_t$
 - The model is defined as follows:
 \begin{align*}
 Y_t &= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2),
 \end{align*}
 
@@ -347,14 +347,14 @@ print(plots_pred_M10[[length(plots_pred_M10)]])
 print(plots_pred_M10_zoom[[length(plots_pred_M10_zoom)]])
 ```
 
-# Model 11: SARIMAX(1,1,1)(1,0,0)[52]
+# Model 11: SARIMAX(0,1,1)(0,0,1)[52]
 
 - $Y_t = \log(\text{casos}_t + 100)$
 - $X_t = [\text{temp\_avg\_8w}_t, \text{precip\_avg\_52w}_t]$
 - The model is defined as follows:
 \begin{align*}
 Y_t &= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2),
 \end{align*}
 
@@ -365,14 +365,14 @@ print(plots_pred_M11[[length(plots_pred_M11)]])
 print(plots_pred_M11_zoom[[length(plots_pred_M11_zoom)]])
 ```
 
-# Model 12: SARIMAX(1,1,1)(1,0,0)[52]
+# Model 12: SARIMAX(0,1,1)(0,0,1)[52]
 
 - $Y_t = \log(\text{casos}_t + 100)$
 - $X_t = [\text{temp\_avg\_8w}_t, \text{umid\_avg\_12w}_t]$
 - The model is defined as follows:
 \begin{align*}
 Y_t &= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - \Phi_1 B^{52})(1 - B)\eta_t &= (1 + \theta_1 B)\epsilon_t, \\
+(1 - B)\eta_t &= (1 + \theta_1 B) (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2),
 \end{align*}
 
@@ -383,14 +383,14 @@ print(plots_pred_M12[[length(plots_pred_M12)]])
 print(plots_pred_M12_zoom[[length(plots_pred_M12_zoom)]])
 ```
 
-# Model 13: SARIMAX(1,1,1)(0,0,1)[52]
+# Model 13: SARIMAX(1,1,0)(0,0,1)[52]
 
 - $Y_t = \log(\text{casos}_t + 100)$
 - $X_t = \text{temp\_avg\_12w}_t$
 - The model is defined as follows:
 \begin{align*}
 Y_t &= X_t \beta + \eta_t, \\
-(1-\phi_1 B)(1 - B)\eta_t &= (1 + \theta_1 B)(1 + \Theta_1 B^{52})\epsilon_t, \\
+(1-\phi_1 B)(1 - B)\eta_t &= (1 + \Theta_1 B^{52})\epsilon_t, \\
 \epsilon_t &\sim \text{Normal}(0, \sigma^2),
 \end{align*}
 

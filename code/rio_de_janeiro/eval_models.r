@@ -3,179 +3,590 @@ library(tidyverse)
 library(ggplot2)
 library(patchwork)
 
-# Load the data
-dengue_climate_rj <- read.csv("data/rio_de_janeiro/dengue_climate_rj_inla.csv")
+source("code/aux_func.r")
+
+dengue_climate_rj <- read_csv("data/rio_de_janeiro/dengue_climate_rj_inla.csv")
+results_M0 <- readRDS("results/rio_de_janeiro/results_M0.rds")
 results_M1 <- readRDS("results/rio_de_janeiro/results_M1.rds")
 results_M2 <- readRDS("results/rio_de_janeiro/results_M2.rds")
+results_M3 <- readRDS("results/rio_de_janeiro/results_M3.rds")
+results_M4 <- readRDS("results/rio_de_janeiro/results_M4.rds")
+results_M5 <- readRDS("results/rio_de_janeiro/results_M5.rds")
+results_M6 <- readRDS("results/rio_de_janeiro/results_M6.rds")
+results_M7 <- readRDS("results/rio_de_janeiro/results_M7.rds")
+results_M8 <- readRDS("results/rio_de_janeiro/results_M8.rds")
+results_M9 <- readRDS("results/rio_de_janeiro/results_M9.rds")
+results_M10 <- readRDS("results/rio_de_janeiro/results_M10.rds")
+results_M11 <- readRDS("results/rio_de_janeiro/results_M11.rds")
+results_M12 <- readRDS("results/rio_de_janeiro/results_M12.rds")
+results_M13 <- readRDS("results/rio_de_janeiro/results_M13.rds")
+start_week <- 525
+len_windows <- 8
 
-# Plot all predictions together
-plot_all_predictions <- function(results) {
-  data_pred <- data.frame()
-  all_pred <- lapply(1:length(results$fit), function(i) {
-    fit <- results$fit[[i]]
-    obs_values <- dengue_climate_rj[which(is.na(fit$.args$data$casprov)), "casprov"]
-    pred <- fit$summary.fitted.values[(nrow(fit$summary.fitted.values) - 2):nrow(fit$summary.fitted.values), ]
-    upp <- pred$`0.95quant`
-    low <- pred$`0.05quant`
-    data_pred <<- rbind(data_pred, data.frame(obs = obs_values,pred = pred$mean, low = low, upp = upp))
-  })
-  data_pred$id <- 1:nrow(data_pred)
-  
-  ggplot(data_pred, aes(x = id)) +
-    
-    # Credible interval (gray ribbon)
-    geom_ribbon(aes(ymin = low, ymax = upp, fill = "CI"),
-                alpha = 0.6) +
-    
-    # Observed (bars)
-    geom_col(aes(y = obs, fill = "counting"),
-             alpha = 0.9) +
-    
-    # Fitted (dashed blue line)
-    geom_line(aes(y = pred, color = "fitted"),
-              linetype = "solid", linewidth = 1) +
-  
-    geom_vline(xintercept = seq(1, nrow(data_pred), by = 3),
-             linetype = "dashed") +
-    
-    scale_fill_manual(name = "", values = c("counting" = "#9ecae1",
-                                            "CI" = "gray70"),
-                      labels = c("counting" = "Observed",
-                                 "CI" = "90% CI")
-    ) +
-    scale_color_manual(name = "", values = c("fitted" = "blue"),
-                       labels = c("Fitted")) +
-    
-    labs(
-      x = "id",
-      y = "Number of Cases"
-    ) +
-    
-    theme_bw() +
-    theme(
-      panel.grid.minor = element_line(color = "gray90"),
-      panel.grid.major = element_line(color = "gray80"),
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      legend.position = "top"
-    )
-}
-plot_M1 <- plot_all_predictions(results_M1)
-plot_M2 <- plot_all_predictions(results_M2)
+plots_M0 <- lapply(1:length(results_M0$data_inla), function(i) {
+  plot_pred_by_window(results_M0$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M0_zoom <- lapply(1:length(results_M0$data_inla), function(i) {
+  data_i <- results_M0$data_inla[[i]] |> filter(data_iniSE >= results_M0$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M1 <- lapply(1:length(results_M1$data_inla), function(i) {
+  plot_pred_by_window(results_M1$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M1_zoom <- lapply(1:length(results_M1$data_inla), function(i) {
+  data_i <- results_M1$data_inla[[i]] |> filter(data_iniSE >= results_M1$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M2 <- lapply(1:length(results_M2$data_inla), function(i) {
+  plot_pred_by_window(results_M2$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M2_zoom <- lapply(1:length(results_M2$data_inla), function(i) {
+  data_i <- results_M2$data_inla[[i]] |> filter(data_iniSE >= results_M2$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M3 <- lapply(1:length(results_M3$data_inla), function(i) {
+  plot_pred_by_window(results_M3$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M3_zoom <- lapply(1:length(results_M3$data_inla), function(i) {
+  data_i <- results_M3$data_inla[[i]] |> filter(data_iniSE >= results_M3$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M4 <- lapply(1:length(results_M4$data_inla), function(i) {
+  plot_pred_by_window(results_M4$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M4_zoom <- lapply(1:length(results_M4$data_inla), function(i) {
+  data_i <- results_M4$data_inla[[i]] |> filter(data_iniSE >= results_M4$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M5 <- lapply(1:length(results_M5$data_inla), function(i) {
+  plot_pred_by_window(results_M5$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M5_zoom <- lapply(1:length(results_M5$data_inla), function(i) {
+  data_i <- results_M5$data_inla[[i]] |> filter(data_iniSE >= results_M5$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M6 <- lapply(1:length(results_M6$data_inla), function(i) {
+  plot_pred_by_window(results_M6$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M6_zoom <- lapply(1:length(results_M6$data_inla), function(i) {
+  data_i <- results_M6$data_inla[[i]] |> filter(data_iniSE >= results_M6$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M7 <- lapply(1:length(results_M7$data_inla), function(i) {
+  plot_pred_by_window(results_M7$data_inla[[i]], threshold_week = start_week + (i - 1))
+})
+plots_M7_zoom <- lapply(1:length(results_M7$data_inla), function(i) {
+  data_i <- results_M7$data_inla[[i]] |> filter(data_iniSE >= results_M7$data_inla[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+p <- readRDS(file = "results/rio_de_janeiro/best_p_ar.rds")
+plots_M8 <- lapply(1:length(results_M8), function(i) {
+  plot_pred_by_window(results_M8[[i]], threshold_week = start_week - (p+1) + (i - 1))
+})
+plots_M8_zoom <- lapply(1:length(results_M8), function(i) {
+  data_i <- results_M8[[i]] |> filter(data_iniSE >= results_M8[[i]]$data_iniSE[start_week - (p+1) - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M9 <- lapply(1:length(results_M9), function(i) {
+  data_i <- results_M9[[i]]
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
+})
+plots_M9_zoom <- lapply(1:length(results_M9), function(i) {
+  data_i <- results_M9[[i]] |> filter(data_iniSE >= results_M9[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M10 <- lapply(1:length(results_M10), function(i) {
+  data_i <- results_M10[[i]]
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
+})
+plots_M10_zoom <- lapply(1:length(results_M10), function(i) {
+  data_i <- results_M10[[i]] |> filter(data_iniSE >= results_M10[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M11 <- lapply(1:length(results_M11), function(i) {
+  data_i <- results_M11[[i]]
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
+})
+plots_M11_zoom <- lapply(1:length(results_M11), function(i) {
+  data_i <- results_M11[[i]] |> filter(data_iniSE >= results_M11[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M12 <- lapply(1:length(results_M12), function(i) {
+  data_i <- results_M12[[i]]
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
+})
+plots_M12_zoom <- lapply(1:length(results_M12), function(i) {
+  data_i <- results_M12[[i]] |> filter(data_iniSE >= results_M12[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
+plots_M13 <- lapply(1:length(results_M13), function(i) {
+  data_i <- results_M13[[i]]
+  plot_pred_by_window(data_i, threshold_week = start_week + (i - 1))
+})
+plots_M13_zoom <- lapply(1:length(results_M13), function(i) {
+  data_i <- results_M13[[i]] |> filter(data_iniSE >= results_M13[[i]]$data_iniSE[start_week - 59 + (i - 1)])
+  plot_pred_by_window(data_i, threshold_week = nrow(data_i) - len_windows)
+})
 
-ggsave("vignettes/rio_de_janeiro/figures/plot_pred_M1.png", plot_M1, width = 15, height = 6)
-ggsave("vignettes/rio_de_janeiro/figures/plot_pred_M2.png", plot_M2, width = 15, height = 6)
+saveRDS(plots_M0, file = "results/rio_de_janeiro/plots_pred_M0.rds")
+saveRDS(plots_M1, file = "results/rio_de_janeiro/plots_pred_M1.rds")
+saveRDS(plots_M2, file = "results/rio_de_janeiro/plots_pred_M2.rds")
+saveRDS(plots_M3, file = "results/rio_de_janeiro/plots_pred_M3.rds")
+saveRDS(plots_M4, file = "results/rio_de_janeiro/plots_pred_M4.rds")
+saveRDS(plots_M5, file = "results/rio_de_janeiro/plots_pred_M5.rds")
+saveRDS(plots_M6, file = "results/rio_de_janeiro/plots_pred_M6.rds")
+saveRDS(plots_M7, file = "results/rio_de_janeiro/plots_pred_M7.rds")
+saveRDS(plots_M8, file = "results/rio_de_janeiro/plots_pred_M8.rds")
+saveRDS(plots_M9, file = "results/rio_de_janeiro/plots_pred_M9.rds")
+saveRDS(plots_M10, file = "results/rio_de_janeiro/plots_pred_M10.rds")
+saveRDS(plots_M11, file = "results/rio_de_janeiro/plots_pred_M11.rds")
+saveRDS(plots_M12, file = "results/rio_de_janeiro/plots_pred_M12.rds")
+saveRDS(plots_M13, file = "results/rio_de_janeiro/plots_pred_M13.rds")
 
-# Plot credibility intervals for all predictions together
+saveRDS(plots_M0_zoom, file = "results/rio_de_janeiro/plots_pred_M0_zoom.rds")
+saveRDS(plots_M1_zoom, file = "results/rio_de_janeiro/plots_pred_M1_zoom.rds")
+saveRDS(plots_M2_zoom, file = "results/rio_de_janeiro/plots_pred_M2_zoom.rds")
+saveRDS(plots_M3_zoom, file = "results/rio_de_janeiro/plots_pred_M3_zoom.rds")
+saveRDS(plots_M4_zoom, file = "results/rio_de_janeiro/plots_pred_M4_zoom.rds")
+saveRDS(plots_M5_zoom, file = "results/rio_de_janeiro/plots_pred_M5_zoom.rds")
+saveRDS(plots_M6_zoom, file = "results/rio_de_janeiro/plots_pred_M6_zoom.rds")
+saveRDS(plots_M7_zoom, file = "results/rio_de_janeiro/plots_pred_M7_zoom.rds")
+saveRDS(plots_M8_zoom, file = "results/rio_de_janeiro/plots_pred_M8_zoom.rds")
+saveRDS(plots_M9_zoom, file = "results/rio_de_janeiro/plots_pred_M9_zoom.rds")
+saveRDS(plots_M10_zoom, file = "results/rio_de_janeiro/plots_pred_M10_zoom.rds")
+saveRDS(plots_M11_zoom, file = "results/rio_de_janeiro/plots_pred_M11_zoom.rds")
+saveRDS(plots_M12_zoom, file = "results/rio_de_janeiro/plots_pred_M12_zoom.rds")
+saveRDS(plots_M13_zoom, file = "results/rio_de_janeiro/plots_pred_M13_zoom.rds")
 
-compute_bcis <- function(results) {
-  bcis <- list()
-  for (i in seq_along(results$fit)) {
-    fit <- results$fit[[i]]
-    coef <- fit$summary.fixed
-    bcis[[i]] <- data.frame(
-      window = i,
-      term = rownames(coef),
-      mean = coef$mean,
-      lower = coef$`0.025quant`,
-      upper = coef$`0.975quant`
-    )
-  }
-  do.call(rbind, bcis)
-}
+pred_M0 <- get_pred(results_M0$data_inla, len_windows = len_windows)
+pred_M1 <- get_pred(results_M1$data_inla, len_windows = len_windows)
+pred_M2 <- get_pred(results_M2$data_inla, len_windows = len_windows)
+pred_M3 <- get_pred(results_M3$data_inla, len_windows = len_windows)
+pred_M4 <- get_pred(results_M4$data_inla, len_windows = len_windows)
+pred_M5 <- get_pred(results_M5$data_inla, len_windows = len_windows)
+pred_M6 <- get_pred(results_M6$data_inla, len_windows = len_windows)
+pred_M7 <- get_pred(results_M7$data_inla, len_windows = len_windows)
+pred_M8 <- get_pred(results_M8, len_windows = len_windows)
+pred_M9 <- get_pred(results_M9, len_windows = len_windows)
+pred_M10 <- get_pred(results_M10, len_windows = len_windows)
+pred_M11 <- get_pred(results_M11, len_windows = len_windows)
+pred_M12 <- get_pred(results_M12, len_windows = len_windows)
+pred_M13 <- get_pred(results_M13, len_windows = len_windows)
 
-bcis_M1 <- compute_bcis(results_M1)
-plot_bcis_M1 <- 
-  ggplot(bcis_M1 %>% filter(term %in% c("tempmed", "umidmed")),
-        aes(x = window, y = mean, color = term)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = lower, ymax = upper, fill = term), alpha = 0.2) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(y = "Coefficient", x = "Window") +
-  theme_bw() +
-  theme(legend.title = element_blank())
+bcis_M0 <- compute_bcis(results_M0$fit)
+bcis_M1 <- compute_bcis(results_M1$fit)
+bcis_M2 <- compute_bcis(results_M2$fit)
+bcis_M3 <- compute_bcis(results_M3$fit)
+bcis_M4 <- compute_bcis(results_M4$fit)
+bcis_M5 <- compute_bcis(results_M5$fit)
+bcis_M6 <- compute_bcis(results_M6$fit)
+bcis_M7 <- compute_bcis(results_M7$fit)
 
-plot_inter_M1 <- 
-  ggplot(bcis_M1 %>% filter(term %in% c("(Intercept)")),
-        aes(x = window, y = mean, color = "inter")) +
-  geom_line() +
-  geom_ribbon(aes(ymin = lower, ymax = upper, fill = "inter"), alpha = 0.2) +
-  scale_color_manual(name = "", values = c("inter" = "blue"),
-                     labels = c("Intercept")) +
-  scale_fill_manual(name = "", values = c("inter" = "blue"),
-                    labels = c("Intercept")) +
-  # geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(y = "Intercept", x = "Window") +
-  theme_bw() +
-  theme(legend.title = element_blank(),
-        legend.position = "none")
+plot_coef_M0 <- plot_coef(bcis_M0, cova = F)
+plot_coef_M1 <- plot_coef(bcis_M1)
+plot_coef_M2 <- plot_coef(bcis_M2)
+plot_coef_M3 <- plot_coef(bcis_M3)
+plot_coef_M4 <- plot_coef(bcis_M4)
+plot_coef_M5 <- plot_coef(bcis_M5)
+plot_coef_M6 <- plot_coef(bcis_M6)
+plot_coef_M7 <- plot_coef(bcis_M7, cova = F)
 
-bcis_M2 <- compute_bcis(results_M2)
-plot_bcis_M2 <- 
-  ggplot(bcis_M2 %>% filter(term %in% c("tempmed_lag5", "umidmed_lag8")),
-        aes(x = window, y = mean, color = term)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = lower, ymax = upper, fill = term), alpha = 0.2) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(y = "Coefficient", x = "Window") +
-  theme_bw() +
-  theme(legend.title = element_blank())
+ggsave("vignettes/rio_de_janeiro/figures/coef_M0.png", plot_coef_M0, width = 5, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M1.png", plot_coef_M1, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M2.png", plot_coef_M2, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M3.png", plot_coef_M3, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M4.png", plot_coef_M4, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M5.png", plot_coef_M5, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M6.png", plot_coef_M6, width = 10, height = 4)
+ggsave("vignettes/rio_de_janeiro/figures/coef_M7.png", plot_coef_M7, width = 5, height = 4)
 
-plot_inter_M2 <- 
-  ggplot(bcis_M2 %>% filter(term %in% c("(Intercept)")),
-        aes(x = window, y = mean, color = "inter")) +
-  geom_line() +
-  geom_ribbon(aes(ymin = lower, ymax = upper, fill = "inter"), alpha = 0.2) +
-  scale_color_manual(name = "", values = c("inter" = "blue"),
-                     labels = c("Intercept")) +
-  scale_fill_manual(name = "", values = c("inter" = "blue"),
-                    labels = c("Intercept")) +
-  # geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(y = "Intercept", x = "Window") +
-  theme_bw() +
-  theme(legend.title = element_blank(),
-        legend.position = "none")
+plots_time_effect_M0 <- lapply(results_M0$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M1 <- lapply(results_M1$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M2 <- lapply(results_M2$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M3 <- lapply(results_M3$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M4 <- lapply(results_M4$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M5 <- lapply(results_M5$fit, plot_random_effects, name = "time_id")
+plots_time_effect_M6 <- lapply(results_M6$fit, plot_random_effects, name = "time_id")
+
+plots_week_effect_M0 <- lapply(results_M0$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M1 <- lapply(results_M1$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M2 <- lapply(results_M2$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M3 <- lapply(results_M3$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M4 <- lapply(results_M4$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M5 <- lapply(results_M5$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M6 <- lapply(results_M6$fit, plot_random_effects, name = "week_id", name_group = "year_id")
+plots_week_effect_M7 <- lapply(results_M7$fit, plot_random_effects, name = "week_id")
+
+plots_year_effect_M7 <- lapply(results_M7$fit, plot_random_effects, name = "year_id")
+
+saveRDS(plots_time_effect_M0, file = "results/rio_de_janeiro/plots_time_effect_M0.rds")
+saveRDS(plots_time_effect_M1, file = "results/rio_de_janeiro/plots_time_effect_M1.rds")
+saveRDS(plots_time_effect_M2, file = "results/rio_de_janeiro/plots_time_effect_M2.rds")
+saveRDS(plots_time_effect_M3, file = "results/rio_de_janeiro/plots_time_effect_M3.rds")
+saveRDS(plots_time_effect_M4, file = "results/rio_de_janeiro/plots_time_effect_M4.rds")
+saveRDS(plots_time_effect_M5, file = "results/rio_de_janeiro/plots_time_effect_M5.rds")
+saveRDS(plots_time_effect_M6, file = "results/rio_de_janeiro/plots_time_effect_M6.rds")
+
+saveRDS(plots_week_effect_M0, file = "results/rio_de_janeiro/plots_week_effect_M0.rds")
+saveRDS(plots_week_effect_M1, file = "results/rio_de_janeiro/plots_week_effect_M1.rds")
+saveRDS(plots_week_effect_M2, file = "results/rio_de_janeiro/plots_week_effect_M2.rds")
+saveRDS(plots_week_effect_M3, file = "results/rio_de_janeiro/plots_week_effect_M3.rds")
+saveRDS(plots_week_effect_M4, file = "results/rio_de_janeiro/plots_week_effect_M4.rds")
+saveRDS(plots_week_effect_M5, file = "results/rio_de_janeiro/plots_week_effect_M5.rds")
+saveRDS(plots_week_effect_M6, file = "results/rio_de_janeiro/plots_week_effect_M6.rds")
+saveRDS(plots_week_effect_M7, file = "results/rio_de_janeiro/plots_week_effect_M7.rds")
+
+saveRDS(plots_year_effect_M7, file = "results/rio_de_janeiro/plots_year_effect_M7.rds")
 
 
-ggsave("vignettes/rio_de_janeiro/figures/plot_bcis_M1.png", plot_inter_M1 + plot_bcis_M1,
-        width = 15, height = 6)
-ggsave("vignettes/rio_de_janeiro/figures/plot_bcis_M2.png", plot_inter_M2 + plot_bcis_M2,
-        width = 15, height = 6)
+quantiles <- c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
+wis_M0 <- mean(sapply(results_M0$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M1 <- mean(sapply(results_M1$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M2 <- mean(sapply(results_M2$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M3 <- mean(sapply(results_M3$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M4 <- mean(sapply(results_M4$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M5 <- mean(sapply(results_M5$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M6 <- mean(sapply(results_M6$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M7 <- mean(sapply(results_M7$fit, compute_wis, quantile_level = quantiles, 
+                      data = dengue_climate_rj, outcome = "casos"))
+wis_M8 <- mean(sapply(results_M8, function(pred) {
+  rows_filter <- grepl("^y_forecast", as.character(pred$variable))
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:6)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
+wis_M9 <- mean(sapply(results_M9, function(pred) {
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
+wis_M10 <- mean(sapply(results_M10, function(pred) {
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
+wis_M11 <- mean(sapply(results_M11, function(pred) {
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
+wis_M12 <- mean(sapply(results_M12, function(pred) {
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
+wis_M13 <- mean(sapply(results_M13, function(pred) {
+  rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
+  pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
+  obs_values <- pred[rows_filter, "obs"]
+  scoringutils::wis(obs_values, pred_matrix, quantiles)
+}))
 
-# summary
+waic_M0 <- mean(sapply(results_M0$fit, function(fit) fit$waic$waic))
+waic_M1 <- mean(sapply(results_M1$fit, function(fit) fit$waic$waic))
+waic_M2 <- mean(sapply(results_M2$fit, function(fit) fit$waic$waic))
+waic_M3 <- mean(sapply(results_M3$fit, function(fit) fit$waic$waic))
+waic_M4 <- mean(sapply(results_M4$fit, function(fit) fit$waic$waic))
+waic_M5 <- mean(sapply(results_M5$fit, function(fit) fit$waic$waic))
+waic_M6 <- mean(sapply(results_M6$fit, function(fit) fit$waic$waic))
+waic_M7 <- mean(sapply(results_M7$fit, function(fit) fit$waic$waic))
+waic_M8 <- NA 
+waic_M9 <- NA
+waic_M10 <- NA
+waic_M11 <- NA
+waic_M12 <- NA
+waic_M13 <- NA
 
-## compute wis
-quantiles <- c(0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95)
-compute_wis <- function(fit, quantile_level) {
-  obs_values <- dengue_climate_rj[which(is.na(fit$.args$data$casprov)), "casprov"]
-  pred <- fit$summary.fitted.values[(nrow(fit$summary.fitted.values) - 2):nrow(fit$summary.fitted.values), 
-                                    3:(ncol(fit$summary.fitted.values) - 1)]
-  pred <- as.matrix(pred)
-  scoringutils::wis(obs_values, pred, quantile_level)
-}
+mae_id_M0 <- mae_by_col(pred_M0, "index")
+mae_id_M1 <- mae_by_col(pred_M1, "index")
+mae_id_M2 <- mae_by_col(pred_M2, "index")
+mae_id_M3 <- mae_by_col(pred_M3, "index")
+mae_id_M4 <- mae_by_col(pred_M4, "index")
+mae_id_M5 <- mae_by_col(pred_M5, "index")
+mae_id_M6 <- mae_by_col(pred_M6, "index")
+mae_id_M7 <- mae_by_col(pred_M7, "index")
+mae_id_M8 <- mae_by_col(pred_M8, "index")
+mae_id_M9 <- mae_by_col(pred_M9, "index")
+mae_id_M10 <- mae_by_col(pred_M10, "index")
+mae_id_M11 <- mae_by_col(pred_M11, "index")
+mae_id_M12 <- mae_by_col(pred_M12, "index")
+mae_id_M13 <- mae_by_col(pred_M13, "index")
 
-wis_M1 <- mean(sapply(results_M1$fit, compute_wis, quantile_level = quantiles))
-wis_M2 <- mean(sapply(results_M2$fit, compute_wis, quantile_level = quantiles))
+rmse_id_M0 <- rmse_by_col(pred_M0, "index")
+rmse_id_M1 <- rmse_by_col(pred_M1, "index")
+rmse_id_M2 <- rmse_by_col(pred_M2, "index")
+rmse_id_M3 <- rmse_by_col(pred_M3, "index")
+rmse_id_M4 <- rmse_by_col(pred_M4, "index")
+rmse_id_M5 <- rmse_by_col(pred_M5, "index")
+rmse_id_M6 <- rmse_by_col(pred_M6, "index")
+rmse_id_M7 <- rmse_by_col(pred_M7, "index")
+rmse_id_M8 <- rmse_by_col(pred_M8, "index")
+rmse_id_M9 <- rmse_by_col(pred_M9, "index")
+rmse_id_M10 <- rmse_by_col(pred_M10, "index")
+rmse_id_M11 <- rmse_by_col(pred_M11, "index")
+rmse_id_M12 <- rmse_by_col(pred_M12, "index")
+rmse_id_M13 <- rmse_by_col(pred_M13, "index")
 
-## compute waic
-compute_waic <- function(fit) {
-  fit$waic$waic
-}
-waic_M1 <- mean(sapply(results_M1$fit, compute_waic))
-waic_M2 <- mean(sapply(results_M2$fit, compute_waic))
+mape_id_M0 <- mape_by_col(pred_M0, "index")
+mape_id_M1 <- mape_by_col(pred_M1, "index")
+mape_id_M2 <- mape_by_col(pred_M2, "index")
+mape_id_M3 <- mape_by_col(pred_M3, "index")
+mape_id_M4 <- mape_by_col(pred_M4, "index")
+mape_id_M5 <- mape_by_col(pred_M5, "index")
+mape_id_M6 <- mape_by_col(pred_M6, "index")
+mape_id_M7 <- mape_by_col(pred_M7, "index")
+mape_id_M8 <- mape_by_col(pred_M8, "index")
+mape_id_M9 <- mape_by_col(pred_M9, "index")
+mape_id_M10 <- mape_by_col(pred_M10, "index")
+mape_id_M11 <- mape_by_col(pred_M11, "index")
+mape_id_M12 <- mape_by_col(pred_M12, "index")
+mape_id_M13 <- mape_by_col(pred_M13, "index")
 
-## compute MAE
-compute_mae <- function(fit) {
-  obs_values <- dengue_climate_rj[which(is.na(fit$.args$data$casprov)), "casprov"]
-  pred <- fit$summary.fitted.values[(nrow(fit$summary.fitted.values) - 2):nrow(fit$summary.fitted.values), "mean"]
-  mean(abs(obs_values - pred))
-}
-mae_M1 <- mean(sapply(results_M1$fit, compute_mae))
-mae_M2 <- mean(sapply(results_M2$fit, compute_mae))
+mae_window_M0 <- mae_by_col(pred_M0, "window")
+mae_window_M1 <- mae_by_col(pred_M1, "window")
+mae_window_M2 <- mae_by_col(pred_M2, "window")
+mae_window_M3 <- mae_by_col(pred_M3, "window")
+mae_window_M4 <- mae_by_col(pred_M4, "window")
+mae_window_M5 <- mae_by_col(pred_M5, "window")
+mae_window_M6 <- mae_by_col(pred_M6, "window")
+mae_window_M7 <- mae_by_col(pred_M7, "window")
+mae_window_M8 <- mae_by_col(pred_M8, "window")
+mae_window_M9 <- mae_by_col(pred_M9, "window")
+mae_window_M10 <- mae_by_col(pred_M10, "window")
+mae_window_M11 <- mae_by_col(pred_M11, "window")
+mae_window_M12 <- mae_by_col(pred_M12, "window")
+mae_window_M13 <- mae_by_col(pred_M13, "window")
 
-summary_results <- data.frame(
-  Model = c("M1", "M2"),
-  MAE = c(mae_M1, mae_M2),
-  WIS = c(wis_M1, wis_M2),
-  WAIC = c(waic_M1, waic_M2)
-)
-write.csv(summary_results, "results/rio_de_janeiro/summary_results.csv", row.names = FALSE)
+rmse_window_M0 <- rmse_by_col(pred_M0, "window")
+rmse_window_M1 <- rmse_by_col(pred_M1, "window")
+rmse_window_M2 <- rmse_by_col(pred_M2, "window")
+rmse_window_M3 <- rmse_by_col(pred_M3, "window")
+rmse_window_M4 <- rmse_by_col(pred_M4, "window")
+rmse_window_M5 <- rmse_by_col(pred_M5, "window")
+rmse_window_M6 <- rmse_by_col(pred_M6, "window")
+rmse_window_M7 <- rmse_by_col(pred_M7, "window")
+rmse_window_M8 <- rmse_by_col(pred_M8, "window")
+rmse_window_M9 <- rmse_by_col(pred_M9, "window")
+rmse_window_M10 <- rmse_by_col(pred_M10, "window")
+rmse_window_M11 <- rmse_by_col(pred_M11, "window")
+rmse_window_M12 <- rmse_by_col(pred_M12, "window")
+rmse_window_M13 <- rmse_by_col(pred_M13, "window")
+
+mape_window_M0 <- mape_by_col(pred_M0, "window")
+mape_window_M1 <- mape_by_col(pred_M1, "window")
+mape_window_M2 <- mape_by_col(pred_M2, "window")
+mape_window_M3 <- mape_by_col(pred_M3, "window")
+mape_window_M4 <- mape_by_col(pred_M4, "window")
+mape_window_M5 <- mape_by_col(pred_M5, "window")
+mape_window_M6 <- mape_by_col(pred_M6, "window")
+mape_window_M7 <- mape_by_col(pred_M7, "window")
+mape_window_M8 <- mape_by_col(pred_M8, "window")
+mape_window_M9 <- mape_by_col(pred_M9, "window")
+mape_window_M10 <- mape_by_col(pred_M10, "window")
+mape_window_M11 <- mape_by_col(pred_M11, "window")
+mape_window_M12 <- mape_by_col(pred_M12, "window")
+mape_window_M13 <- mape_by_col(pred_M13, "window")
+
+mae_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases))
+mae_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases))
+mae_M2 <- mean(abs(pred_M2$obs - pred_M2$predicted_cases))
+mae_M3 <- mean(abs(pred_M3$obs - pred_M3$predicted_cases))
+mae_M4 <- mean(abs(pred_M4$obs - pred_M4$predicted_cases))
+mae_M5 <- mean(abs(pred_M5$obs - pred_M5$predicted_cases))
+mae_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases))
+mae_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases))
+mae_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases))
+mae_M9 <- mean(abs(pred_M9$obs - pred_M9$predicted_cases))
+mae_M10 <- mean(abs(pred_M10$obs - pred_M10$predicted_cases))
+mae_M11 <- mean(abs(pred_M11$obs - pred_M11$predicted_cases))
+mae_M12 <- mean(abs(pred_M12$obs - pred_M12$predicted_cases))
+mae_M13 <- mean(abs(pred_M13$obs - pred_M13$predicted_cases))
+
+rmse_M0 <- sqrt(mean((pred_M0$obs - pred_M0$predicted_cases)^2))
+rmse_M1 <- sqrt(mean((pred_M1$obs - pred_M1$predicted_cases)^2))
+rmse_M2 <- sqrt(mean((pred_M2$obs - pred_M2$predicted_cases)^2))
+rmse_M3 <- sqrt(mean((pred_M3$obs - pred_M3$predicted_cases)^2))
+rmse_M4 <- sqrt(mean((pred_M4$obs - pred_M4$predicted_cases)^2))
+rmse_M5 <- sqrt(mean((pred_M5$obs - pred_M5$predicted_cases)^2))
+rmse_M6 <- sqrt(mean((pred_M6$obs - pred_M6$predicted_cases)^2))
+rmse_M7 <- sqrt(mean((pred_M7$obs - pred_M7$predicted_cases)^2))
+rmse_M8 <- sqrt(mean((pred_M8$obs - pred_M8$predicted_cases)^2))
+rmse_M9 <- sqrt(mean((pred_M9$obs - pred_M9$predicted_cases)^2))
+rmse_M10 <- sqrt(mean((pred_M10$obs - pred_M10$predicted_cases)^2))
+rmse_M11 <- sqrt(mean((pred_M11$obs - pred_M11$predicted_cases)^2))
+rmse_M12 <- sqrt(mean((pred_M12$obs - pred_M12$predicted_cases)^2))
+rmse_M13 <- sqrt(mean((pred_M13$obs - pred_M13$predicted_cases)^2))
+
+mape_M0 <- mean(abs(pred_M0$obs - pred_M0$predicted_cases) / pred_M0$obs) * 100
+mape_M1 <- mean(abs(pred_M1$obs - pred_M1$predicted_cases) / pred_M1$obs) * 100
+mape_M2 <- mean(abs(pred_M2$obs - pred_M2$predicted_cases) / pred_M2$obs) * 100
+mape_M3 <- mean(abs(pred_M3$obs - pred_M3$predicted_cases) / pred_M3$obs) * 100
+mape_M4 <- mean(abs(pred_M4$obs - pred_M4$predicted_cases) / pred_M4$obs) * 100
+mape_M5 <- mean(abs(pred_M5$obs - pred_M5$predicted_cases) / pred_M5$obs) * 100
+mape_M6 <- mean(abs(pred_M6$obs - pred_M6$predicted_cases) / pred_M6$obs) * 100
+mape_M7 <- mean(abs(pred_M7$obs - pred_M7$predicted_cases) / pred_M7$obs) * 100
+mape_M8 <- mean(abs(pred_M8$obs - pred_M8$predicted_cases) / pred_M8$obs) * 100
+mape_M9 <- mean(abs(pred_M9$obs - pred_M9$predicted_cases) / pred_M9$obs) * 100
+mape_M10 <- mean(abs(pred_M10$obs - pred_M10$predicted_cases) / pred_M10$obs) * 100
+mape_M11 <- mean(abs(pred_M11$obs - pred_M11$predicted_cases) / pred_M11$obs) * 100
+mape_M12 <- mean(abs(pred_M12$obs - pred_M12$predicted_cases) / pred_M12$obs) * 100
+mape_M13 <- mean(abs(pred_M13$obs - pred_M13$predicted_cases) / pred_M13$obs) * 100
+
+mae_id <- rbind(
+  cbind(model = "M0", mae_id_M0),
+  cbind(model = "M1", mae_id_M1),
+  cbind(model = "M2", mae_id_M2),
+  cbind(model = "M3", mae_id_M3),
+  cbind(model = "M4", mae_id_M4),
+  cbind(model = "M5", mae_id_M5),
+  cbind(model = "M6", mae_id_M6),
+  cbind(model = "M7", mae_id_M7),
+  cbind(model = "M8", mae_id_M8),
+  cbind(model = "M9", mae_id_M9),
+  cbind(model = "M10", mae_id_M10),
+  cbind(model = "M11", mae_id_M11),
+  cbind(model = "M12", mae_id_M12),
+  cbind(model = "M13", mae_id_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mae,
+    names_prefix = "mae_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/mae_by_id.csv")
+
+mae_window <- rbind(
+  cbind(model = "M0", mae_window_M0),
+  cbind(model = "M1", mae_window_M1),
+  cbind(model = "M2", mae_window_M2),
+  cbind(model = "M3", mae_window_M3),
+  cbind(model = "M4", mae_window_M4),
+  cbind(model = "M5", mae_window_M5),
+  cbind(model = "M6", mae_window_M6),
+  cbind(model = "M7", mae_window_M7),
+  cbind(model = "M8", mae_window_M8),
+  cbind(model = "M9", mae_window_M9),
+  cbind(model = "M10", mae_window_M10),
+  cbind(model = "M11", mae_window_M11),
+  cbind(model = "M12", mae_window_M12),
+  cbind(model = "M13", mae_window_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mae,
+    names_prefix = "mae_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/mae_by_window.csv")
+
+rmse_id <- rbind(
+  cbind(model = "M0", rmse_id_M0),
+  cbind(model = "M1", rmse_id_M1),
+  cbind(model = "M2", rmse_id_M2),
+  cbind(model = "M3", rmse_id_M3),
+  cbind(model = "M4", rmse_id_M4),
+  cbind(model = "M5", rmse_id_M5),
+  cbind(model = "M6", rmse_id_M6),
+  cbind(model = "M7", rmse_id_M7),
+  cbind(model = "M8", rmse_id_M8),
+  cbind(model = "M9", rmse_id_M9),
+  cbind(model = "M10", rmse_id_M10),
+  cbind(model = "M11", rmse_id_M11),
+  cbind(model = "M12", rmse_id_M12),
+  cbind(model = "M13", rmse_id_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = rmse,
+    names_prefix = "rmse_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/rmse_by_id.csv")
+
+rmse_window <- rbind(
+  cbind(model = "M0", rmse_window_M0),
+  cbind(model = "M1", rmse_window_M1),
+  cbind(model = "M2", rmse_window_M2),
+  cbind(model = "M3", rmse_window_M3),
+  cbind(model = "M4", rmse_window_M4),
+  cbind(model = "M5", rmse_window_M5),
+  cbind(model = "M6", rmse_window_M6),
+  cbind(model = "M7", rmse_window_M7),
+  cbind(model = "M8", rmse_window_M8),
+  cbind(model = "M9", rmse_window_M9),
+  cbind(model = "M10", rmse_window_M10),
+  cbind(model = "M11", rmse_window_M11),
+  cbind(model = "M12", rmse_window_M12),
+  cbind(model = "M13", rmse_window_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = rmse,
+    names_prefix = "rmse_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/rmse_by_window.csv")
+
+mape_id <- rbind(
+  cbind(model = "M0", mape_id_M0),
+  cbind(model = "M1", mape_id_M1),
+  cbind(model = "M2", mape_id_M2),
+  cbind(model = "M3", mape_id_M3),
+  cbind(model = "M4", mape_id_M4),
+  cbind(model = "M5", mape_id_M5),
+  cbind(model = "M6", mape_id_M6),
+  cbind(model = "M7", mape_id_M7),
+  cbind(model = "M8", mape_id_M8),
+  cbind(model = "M9", mape_id_M9),
+  cbind(model = "M10", mape_id_M10),
+  cbind(model = "M11", mape_id_M11),
+  cbind(model = "M12", mape_id_M12),
+  cbind(model = "M13", mape_id_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mape,
+    names_prefix = "mape_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/mape_by_id.csv")
+
+mape_window <- rbind(
+  cbind(model = "M0", mape_window_M0),
+  cbind(model = "M1", mape_window_M1),
+  cbind(model = "M2", mape_window_M2),
+  cbind(model = "M3", mape_window_M3),
+  cbind(model = "M4", mape_window_M4),
+  cbind(model = "M5", mape_window_M5),
+  cbind(model = "M6", mape_window_M6),
+  cbind(model = "M7", mape_window_M7),
+  cbind(model = "M8", mape_window_M8),
+  cbind(model = "M9", mape_window_M9),
+  cbind(model = "M10", mape_window_M10),
+  cbind(model = "M11", mape_window_M11),
+  cbind(model = "M12", mape_window_M12),
+  cbind(model = "M13", mape_window_M13)
+) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = mape,
+    names_prefix = "mape_"
+  ) %>%
+  write_csv("results/rio_de_janeiro/mape_by_window.csv")
+
+summary_metrics <- data.frame(
+  model = c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13"),
+  wis = c(wis_M0, wis_M1, wis_M2, wis_M3, wis_M4, wis_M5, wis_M6, wis_M7, wis_M8, wis_M9, wis_M10, wis_M11, wis_M12, wis_M13),
+  waic = c(waic_M0, waic_M1, waic_M2, waic_M3, waic_M4, waic_M5, waic_M6, waic_M7, waic_M8, waic_M9, waic_M10, waic_M11, waic_M12, waic_M13),
+  mae = c(mae_M0, mae_M1, mae_M2, mae_M3, mae_M4, mae_M5, mae_M6, mae_M7, mae_M8, mae_M9, mae_M10, mae_M11, mae_M12, mae_M13),
+  rmse = c(rmse_M0, rmse_M1, rmse_M2, rmse_M3, rmse_M4, rmse_M5, rmse_M6, rmse_M7, rmse_M8, rmse_M9, rmse_M10, rmse_M11, rmse_M12, rmse_M13),
+  mape = c(mape_M0, mape_M1, mape_M2, mape_M3, mape_M4, mape_M5, mape_M6, mape_M7, mape_M8, mape_M9, mape_M10, mape_M11, mape_M12, mape_M13)
+) %>%
+  write_csv("results/rio_de_janeiro/summary_metrics.csv")

@@ -14,22 +14,67 @@ library(corrplot)
 knitr::opts_chunk$set(
   collapse = TRUE
 )
-dengue_climate_rj <- read_csv("../../data/rio_de_janeiro/dengue_climate_rj_inla.csv")
+dengue_climate_rj <- read_csv(here::here("data", "rio_de_janeiro", "dengue_climate_rj_inla.csv"))
+
+plots_pred_M0 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M0.rds"))
+plots_pred_M1 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M1.rds"))
+plots_pred_M2 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M2.rds"))
+plots_pred_M3 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M3.rds"))
+plots_pred_M4 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M4.rds"))
+plots_pred_M5 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M5.rds"))
+plots_pred_M6 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M6.rds"))
+plots_pred_M7 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M7.rds"))
+plots_pred_M8 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M8.rds"))
+plots_pred_M9 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M9.rds"))
+plots_pred_M10 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M10.rds"))
+plots_pred_M11 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M11.rds"))
+plots_pred_M12 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M12.rds"))
+plots_pred_M13 <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M13.rds"))
+
+plots_pred_M0_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M0_zoom.rds"))
+plots_pred_M1_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M1_zoom.rds"))
+plots_pred_M2_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M2_zoom.rds"))
+plots_pred_M3_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M3_zoom.rds"))
+plots_pred_M4_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M4_zoom.rds"))
+plots_pred_M5_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M5_zoom.rds"))
+plots_pred_M6_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M6_zoom.rds"))
+plots_pred_M7_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M7_zoom.rds"))
+plots_pred_M8_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M8_zoom.rds"))
+plots_pred_M9_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M9_zoom.rds"))
+plots_pred_M10_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M10_zoom.rds"))
+plots_pred_M11_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M11_zoom.rds"))
+plots_pred_M12_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M12_zoom.rds"))
+plots_pred_M13_zoom <- readRDS(here::here("results", "rio_de_janeiro", "plots_pred_M13_zoom.rds"))
+
+plots_time_effect_M0 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M0.rds"))
+plots_time_effect_M1 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M1.rds"))
+plots_time_effect_M2 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M2.rds"))
+plots_time_effect_M3 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M3.rds"))
+plots_time_effect_M4 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M4.rds"))
+plots_time_effect_M5 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M5.rds"))
+plots_time_effect_M6 <- readRDS(here::here("results", "rio_de_janeiro", "plots_time_effect_M6.rds"))
+
+plots_week_effect_M0 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M0.rds"))
+plots_week_effect_M1 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M1.rds"))
+plots_week_effect_M2 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M2.rds"))
+plots_week_effect_M3 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M3.rds"))
+plots_week_effect_M4 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M4.rds"))
+plots_week_effect_M5 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M5.rds"))
+plots_week_effect_M6 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M6.rds"))
+plots_week_effect_M7 <- readRDS(here::here("results", "rio_de_janeiro", "plots_week_effect_M7.rds"))
+
+plots_year_effect_M7 <- readRDS(here::here("results", "rio_de_janeiro", "plots_year_effect_M7.rds"))
 ```
 
 # Exploratory Data Analysis
 
 ## Time Series of Dengue Cases
-```{r eda_dengue, echo = TRUE}
-ggplot() +
-  geom_line(data = dengue_climate_rj, 
-            aes(x = data_iniSE, y = casprov, color = "Probable Cases")) +
-  geom_line(data = dengue_climate_rj, 
-            aes(x = data_iniSE, y = casos, color = "Reported Cases")) +
+```{r eda_dengue, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
+  geom_line(aes(y = casprov), color = "red") +
+  geom_line(aes(y = casos), color = "blue") +
   labs(title = "", x = "Epidemiological Week", y = "Number of Cases") + 
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
-  scale_color_manual(values = c("Reported Cases" = "blue",
-                                "Probable Cases" = "red")) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.title = element_blank(),
@@ -37,9 +82,9 @@ ggplot() +
 ```
 
 ## Time Series of Temperature
-```{r eda_temp, echo = TRUE}
+```{r time_series_temp, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
-  geom_line(aes(y = tempmed)) +
+  geom_line(aes(y = temp_med_avg)) +
   labs(title = "", x = "Epidemiological Week", y = "Average Temperature (°C)") +
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
   theme_minimal() +
@@ -48,11 +93,12 @@ ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
         )
 ```
 
-## Time Series of Humidity
-```{r eda_humidity, echo = TRUE}
+## Time Series of Average temperature in the previous week
+
+```{r time_series_temp_8w, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
-  geom_line(aes(y = umidmed)) +
-  labs(title = "", x = "Epidemiological Week", y = "Average Humidity (%)") +
+  geom_line(aes(y = temp_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Temperature in the Previous 8 Weeks (°C)") +
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -60,11 +106,10 @@ ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
         )
 ```
 
-## Time Series of Precipitation
-```{r eda_precip, echo = TRUE}
+```{r time_series_temp_min_8w, echo = TRUE, fig.width=14, fig.height=6}
 ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
-  geom_line(aes(y = precip_total)) +
-  labs(title = "", x = "Epidemiological Week", y = "Total Precipitation (mm))") +
+  geom_line(aes(y = temp_min_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Minimum Temperature in the Previous 8 Weeks (°C)") +
   scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -72,70 +117,305 @@ ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
         )
 ```
 
-## Correlation Analysis
-```{r eda_correlation, echo = TRUE}
-cor_data <- dengue_climate_rj %>%
-  select(tempmed, umidmed, precip_total) %>%
-  drop_na()
-cor_matrix <- cor(cor_data)
-corrplot::corrplot(cor_matrix, method = "color")
+```{r time_series_temp_max_8w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_max_avg_8w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Maximum Temperature in the Previous 8 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
 ```
 
-## Autocorrelation Analysis
-```{r eda_acf, echo = TRUE}
-acf(dengue_climate_rj$casprov, main = "ACF of Dengue Cases")
-acf(dengue_climate_rj$tempmed, main = "ACF of Average Temperature")
-acf(dengue_climate_rj$umidmed, main = "ACF of Average Humidity")
-acf(diff(dengue_climate_rj$casprov), main = "ACF of Differenced Dengue Cases")
-acf(diff(dengue_climate_rj$tempmed), main = "ACF of Differenced Average Temperature")
+```{r time_series_temp_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Temperature in the Previous 12 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
+``` 
+
+```{r time_series_temp_min_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_min_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Minimum Temperature in the Previous 12 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
 ```
 
-## Lagged Correlation Analysis
-```{r eda_ccf, echo = TRUE}
-ccf_temp <- ccf(diff(dengue_climate_rj$casprov), diff(dengue_climate_rj$tempmed), lag.max = 12, main = "CCF between Differenced Dengue Cases and Differenced Temperature")
-ccf_umid <- ccf(diff(dengue_climate_rj$casprov), dengue_climate_rj$umidmed, lag.max = 12, main = "CCF between Differenced Dengue Cases and Average Humidity")
-ccf_precip <- ccf(diff(dengue_climate_rj$casprov), diff(dengue_climate_rj$precip_total), lag.max = 12, main = "CCF between Differenced Dengue Cases and Differenced Precipitation")
+```{r time_series_temp_max_12w, echo = TRUE, fig.width=14, fig.height=6}
+ggplot(dengue_climate_rj, aes(x = data_iniSE)) +
+  geom_line(aes(y = temp_max_avg_12w)) +
+  labs(title = "", x = "Epidemiological Week", y = "Average Maximum Temperature in the Previous 12 Weeks (°C)") +
+  scale_x_date(date_labels = "%Y-W%V", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        )
 ```
 
-# Fitting Models
+# Correlation Analysis
 
-Initial period: 2023-W13 to 2025-W18
+```{r correlation_analysis, echo = TRUE, fig.width=14, fig.height=6}
+# Select relevant columns for correlation analysis
+correlation_data <- dengue_climate_rj %>%
+  select(casos, temp_med_avg, temp_avg_8w, temp_min_avg_8w, temp_max_avg_8w,
+         temp_avg_12w, temp_min_avg_12w, temp_max_avg_12w, 
+         umid_med_avg, umid_avg_8w, umid_min_avg_8w, umid_max_avg_8w,
+          umid_avg_12w, umid_min_avg_12w, umid_max_avg_12w,
+          precip_total, precip_avg_52w)
+# Calculate the correlation matrix
+cor_matrix <- cor(correlation_data, use = "complete.obs")
+# Visualize the correlation matrix
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+```
 
-## Model 1
+# Fitted Models
 
-For each observed case $Y_i$, we assume a Poisson distribution with mean $\mu_i$:
-$$Y_i \sim \text{Poi}(\mu_i).$$
-The mean $\mu_i$ is modeled as a function of the covariates using a log link function:
-$$
+- Initial period: 2014-W51 to 2025-W01
+- From model 0 to model 7, for each response variable $Y_t$, we assume a Poisson distribution with mean $\lambda_t$ and log link function, and we include a random walk of order 1 in the time observations, with cyclic effect for the epidemiological week and an AR(1) structure for the year, as follows:
+
 \begin{align*}
-\log(\mu_i) &= \beta_0 + \beta_1 \cdot \text{tempmed}_i + \beta_2 \cdot \text{umidmed}_i + u_i, 
-\\
-u_i &\sim \text{RW1}(\sigma^2_u).
+Y_t &\sim \text{Poisson}(\lambda_t), \\
+\log(\lambda_t) &= \beta_0 + \beta_1 X_{t} + u_t + v_t(\text{week}_t, \text{year}_t) \\
+u_t &\sim \text{RW1}(\sigma^2_u), \\
 \end{align*}
-$$
 
-![Predictions for each window - Model 1](figures/plot_pred_M1.png)
-
-![Credibility Intervals for Model 1](figures/plot_bcis_M1.png)
-
-## Model 2
-
-We change the model 1 by including lagged effects of the covariates:
-$$
+where for a fixed year $y$, 
 \begin{align*}
-\log(\mu_i) &= \beta_0 + \beta_1 \cdot \text{tempmed}_{i-5} + \beta_3 \cdot \text{umidmed}_{i-8} + u_i,
-\\
-u_i &\sim \text{RW1}(\sigma^2_u).
+v_t(\text{week}_t, y) &\sim \text{RW1}(\sigma^2_w), \\
+v_t(1, y) - v_t(52, y) &\sim \text{Normal}(0, \sigma^2_w),
 \end{align*}
-$$
+and for a fixed epidemiological week $w$,
+\begin{align*}
+v_t(w, \text{year}_t) &\sim \text{AR1}(\rho, \sigma^2_y).
+\end{align*}
 
-![Predictions for each window - Model 2](figures/plot_pred_M2.png)
+## Model 0: Baseline model with no covariates
 
-![Credibility Intervals for Model 2](figures/plot_bcis_M2.png)
+- $X_t = 0$ for all $t$.
 
-## Model Comparison Results
+```{r model_0, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M0[[length(plots_pred_M0)]])
+print(plots_pred_M0_zoom[[length(plots_pred_M0_zoom)]])
+print(plots_time_effect_M0[[length(plots_time_effect_M0)]])
+print(plots_week_effect_M0[[length(plots_week_effect_M0)]])
+```
 
-```{r summary, echo = F, message = FALSE, warning = FALSE}
-summary_results <- read_csv("../../results/rio_de_janeiro/summary_results.csv")
+![](figures/coef_M0.png)
+
+## Model 1: Average temperature in the previous 8 weeks
+
+- $X_t = \text{temp\_avg\_8w}_t$.
+
+```{r model_1, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M1[[length(plots_pred_M1)]])
+print(plots_pred_M1_zoom[[length(plots_pred_M1_zoom)]])
+print(plots_time_effect_M1[[length(plots_time_effect_M1)]])
+print(plots_week_effect_M1[[length(plots_week_effect_M1)]])
+```
+
+![](figures/coef_M1.png)
+
+## Model 2: Average minimum temperature in the previous 8 weeks
+
+- $X_t = \text{temp\_min\_avg\_8w}_t$.
+```{r model_2, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M2[[length(plots_pred_M2)]])
+print(plots_pred_M2_zoom[[length(plots_pred_M2_zoom)]])
+print(plots_time_effect_M2[[length(plots_time_effect_M2)]])
+print(plots_week_effect_M2[[length(plots_week_effect_M2)]])
+```
+
+![](figures/coef_M2.png)
+
+## Model 3: Average maximum temperature in the previous 8 weeks
+- $X_t = \text{temp\_max\_avg\_8w}_t$.
+```{r model_3, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M3[[length(plots_pred_M3)]])
+print(plots_pred_M3_zoom[[length(plots_pred_M3_zoom)]])
+print(plots_time_effect_M3[[length(plots_time_effect_M3)]])
+print(plots_week_effect_M3[[length(plots_week_effect_M3)]])
+```
+
+![](figures/coef_M3.png)
+
+## Model 4: Average temperature in the previous 12 weeks
+- $X_t = \text{temp\_avg\_12w}_t$
+```{r model_4, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M4[[length(plots_pred_M4)]])
+print(plots_pred_M4_zoom[[length(plots_pred_M4_zoom)]])
+print(plots_time_effect_M4[[length(plots_time_effect_M4)]])
+print(plots_week_effect_M4[[length(plots_week_effect_M4)]])
+```
+
+![](figures/coef_M4.png)
+
+## Model 5: Average minimum temperature in the previous 12 weeks
+- $X_t = \text{temp\_min\_avg\_12w}_t$
+```{r model_5, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M5[[length(plots_pred_M5)]])
+print(plots_pred_M5_zoom[[length(plots_pred_M5_zoom)]])
+print(plots_time_effect_M5[[length(plots_time_effect_M5)]])
+print(plots_week_effect_M5[[length(plots_week_effect_M5)]])
+```
+
+![](figures/coef_M5.png)
+
+## Model 6: Average maximum temperature in the previous 12 weeks
+- $X_t = \text{temp\_max\_avg\_12w}_t$
+```{r model_6, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M6[[length(plots_pred_M6)]])
+print(plots_pred_M6_zoom[[length(plots_pred_M6_zoom)]])
+print(plots_time_effect_M6[[length(plots_time_effect_M6)]])
+print(plots_week_effect_M6[[length(plots_week_effect_M6)]])
+```
+
+![](figures/coef_M6.png)
+
+## Model 7: Leo's model
+
+\begin{align*}
+Y_t &\sim \text{Neg-Bin}(\lambda_t, \theta), \\
+\log(\lambda_t) &= \beta_0 + u_t(\text{week}_t) + v_t(\text{year}_t) \\
+u_t &\sim \text{RW2}(\sigma^2_u), \\
+v_t &\sim \text{Normal}(0, \sigma^2_v).
+\end{align*}
+
+```{r model_7, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M7[[length(plots_pred_M7)]])
+print(plots_pred_M7_zoom[[length(plots_pred_M7_zoom)]])
+print(plots_week_effect_M7[[length(plots_week_effect_M7)]])
+print(plots_year_effect_M7[[length(plots_year_effect_M7)]])
+```
+
+![](figures/coef_M7.png)
+
+# Model 8: AR(5)
+
+- First step: transform the response variable by taking the logarithm of the observed cases plus one, i.e., $Y_t = \log(\text{casos}_t + 1)$.
+- Second step: fit an AR(5) model to the transformed response variable, i.e.,
+\begin{align*}
+Y_t &= \alpha + \sum_{i=1}^{5} \phi_i Y_{t-i} + \epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2).
+\end{align*}
+
+```{r model_8, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M8[[length(plots_pred_M8)]])
+print(plots_pred_M8_zoom[[length(plots_pred_M8_zoom)]])
+```
+
+# Model 9: SARIMA(0,1,0)(1,0,0)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= \alpha + \eta_t, \\
+(1 - \Phi_1 B^{52})(1 - B)\eta_t &= \epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_9, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M9[[length(plots_pred_M9)]])
+print(plots_pred_M9_zoom[[length(plots_pred_M9_zoom)]])
+```
+
+# Model 10: SARIMAX(0,1,0)(1,0,0)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- $X_t = \text{temp\_avg\_8w}_t$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= X_t \beta + \eta_t, \\
+(1 - \Phi_1 B^{52})(1 - B)\eta_t &= \epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_10, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M10[[length(plots_pred_M10)]])
+print(plots_pred_M10_zoom[[length(plots_pred_M10_zoom)]])
+```
+
+# Model 11: SARIMAX(0,1,0)(1,0,0)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- $X_t = [\text{temp\_avg\_8w}_t, \text{precip\_avg\_52w}_t]$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= X_t \beta + \eta_t, \\
+(1 - \Phi_1 B^{52})(1 - B)\eta_t &= \epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_11, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M11[[length(plots_pred_M11)]])
+print(plots_pred_M11_zoom[[length(plots_pred_M11_zoom)]])
+```
+
+# Model 12: SARIMAX(0,1,0)(0,0,1)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- $X_t = [\text{temp\_avg\_8w}_t, \text{umid\_avg\_12w}_t]$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= X_t \beta + \eta_t, \\
+(1 - B)\eta_t &= (1 + \Theta_1 B^{52})\epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_12, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M12[[length(plots_pred_M12)]])
+print(plots_pred_M12_zoom[[length(plots_pred_M12_zoom)]])
+```
+
+# Model 13: SARIMAX(0,1,0)(0,0,1)[52]
+
+- $Y_t = \log(\text{casos}_t + 100)$
+- $X_t = \text{temp\_avg\_12w}_t$
+- The model is defined as follows:
+\begin{align*}
+Y_t &= X_t \beta + \eta_t, \\
+(1 - B)\eta_t &= (1 + \Theta_1 B^{52})\epsilon_t, \\
+\epsilon_t &\sim \text{Normal}(0, \sigma^2),
+\end{align*}
+
+where $B$ is the backshift operator, i.e., $B Y_t = Y_{t-1}$.
+
+```{r model_13, echo = TRUE, fig.width=14, fig.height=6}
+print(plots_pred_M13[[length(plots_pred_M13)]])
+print(plots_pred_M13_zoom[[length(plots_pred_M13_zoom)]])
+```
+
+# Model Comparison
+
+```{r mae_id, echo = F, message = FALSE, warning = FALSE}
+here::here("results", "rio_de_janeiro", "mae_by_id.csv") %>%
+  read_csv() %>%
+  knitr::kable(caption = "MAE by Model and Time Window", digits = 2)
+```
+
+```{r mae_by_window, echo = F, message = FALSE, warning = FALSE}
+here::here("results", "rio_de_janeiro", "mae_by_window.csv") %>%
+  read_csv() %>%
+  knitr::kable(caption = "MAE by Time Window", digits = 2)
+```
+
+```{r summary_results, echo = F, message = FALSE, warning = FALSE}
+summary_results <- read_csv(here::here("results", "rio_de_janeiro", "summary_metrics.csv"))
 knitr::kable(summary_results, caption = "Model Comparison Results", digits = 2)
 ```

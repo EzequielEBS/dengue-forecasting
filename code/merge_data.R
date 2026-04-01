@@ -15,14 +15,14 @@ sf_sc <- read_municipality(code_muni = "SC", year = 2020)
 dengue_climate_rj <- dengue_rj %>%
   rename(epiweek = "SE") %>%
   left_join(climate_rj_weekly, by = "epiweek") %>%
-  select(-c(geocodigo,
-            temp_min_avg,
-            temp_max_avg,
-            temp_med_avg,
-            umid_max_avg,
-            umid_med_avg,
-            umid_min_avg
-            )) %>%
+  # select(-c(geocodigo,
+  #           temp_min_avg,
+  #           temp_max_avg,
+  #           temp_med_avg,
+  #           umid_max_avg,
+  #           umid_med_avg,
+  #           umid_min_avg
+  #           )) %>%
   write_csv("data/rio_de_janeiro/dengue_climate_rj.csv")
 dengue_climate_joinville <- dengue_joinville %>%
   rename(epiweek = "SE") %>%

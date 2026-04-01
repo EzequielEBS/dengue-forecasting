@@ -8,8 +8,8 @@ api_key = "EzequielEBS:c74e2486-70d0-454a-983b-a12d55376324"
 dengue_rj = mosqlient.get_infodengue(
   api_key = api_key, 
   disease =  "dengue", 
-  start_date = "2022-12-01", 
-  end_date = "2026-02-19", 
+  start_date = "2014-12-01", 
+  end_date = "2026-02-28", 
   uf = "RJ",
   geocode = 3304557
 )
@@ -33,8 +33,8 @@ dengue_sc = mosqlient.get_infodengue(
 
 climate_rj = mosqlient.get_climate(
     api_key = api_key,
-    start_date = "2022-12-01",
-    end_date = "2026-02-19", 
+    start_date = "2014-12-01", 
+  end_date = "2026-02-28", 
     uf = "RJ",
     geocode = 3304557
 )

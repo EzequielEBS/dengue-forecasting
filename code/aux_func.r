@@ -45,7 +45,7 @@ get_pred <- function(results, len_windows = 3) {
   return(data_pred)
 }
 
-plot_pred_by_window <- function(data, threshold_week) {
+plot_pred_by_window <- function(data, threshold_week, ci = "95% CI") {
   plot <- ggplot(data, aes(x = data_iniSE)) +
     
     # Credible interval (gray ribbon)
@@ -65,7 +65,7 @@ plot_pred_by_window <- function(data, threshold_week) {
     #            color = "black", linewidth = 1.5) +
     
     scale_fill_manual(name = "", values = c("CI" = "gray70"),
-                      labels = c("CI" = "95% CI")
+                      labels = c("CI" = ci)
     ) +
     scale_color_manual(name = "", values = c("fitted" = "blue", "counting" = "orange"),
                        labels = c("counting" = "Observed",
