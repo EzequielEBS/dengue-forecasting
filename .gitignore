@@ -52,7 +52,6 @@ po/*~
 rsconnect/
 
 # Generated model outputs and saved results
-results/
 *.rds
 *.RDS
 *.rda
