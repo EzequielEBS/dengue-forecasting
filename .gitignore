@@ -51,7 +51,27 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
+# Generated model outputs and saved results
+results/
+*.rds
+*.RDS
+*.rda
+*.qs
+*.qs2
+
+# Geospatial/shapefile artifacts
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.sbn
+*.sbx
+*.qix
+*.fix
+*.shp.xml
+*.gpkg
+
 # Others
-\results
 *.exe
 *.html
