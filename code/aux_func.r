@@ -1,6 +1,7 @@
 run_inla_model <- function(data, outcome, threshold_week, formula, family, 
                             quantiles = c(0.025, 0.975),
-                            len_windows = 3
+                            len_windows = 3,
+                            num_threads = "15:1"
                           ) {
   train_data <- data[data$epiweek <= data$epiweek[threshold_week], ]
   test_data <- data[data$epiweek > data$epiweek[threshold_week] &
@@ -19,7 +20,8 @@ run_inla_model <- function(data, outcome, threshold_week, formula, family,
                control.compute = list(dic = TRUE, 
                                       waic = TRUE,
                                       cpo = TRUE
-                                    )
+                                    ),
+                num.threads = num_threads
   )
   
   data_inla$obs <- obs_values
@@ -308,7 +310,8 @@ sel_par_sarimax <- function(data_i, xreg, stepwise = F) {
 }
 
 run_sarimax <- function(data, cov_name, w, par, method = "CSS",
-                      len_windows = 3
+                      len_windows = 3,
+                      optim.method = "BFGS"
                       ) {
   data_i <- ts(data[data$time_id <= w, ],
                 frequency = 52, 
@@ -329,7 +332,8 @@ run_sarimax <- function(data, cov_name, w, par, method = "CSS",
   fit <- forecast::Arima(y, order = c(par$p, par$d, par$q), 
                     seasonal = c(par$P, par$D, par$Q),
                     xreg = xreg,
-                    method = method
+                    method = method,
+                    optim.method = optim.method
                   )
   resids <- residuals(fit)
   pred_insample <- as.numeric(y) - as.numeric(resids)

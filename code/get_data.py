@@ -108,3 +108,60 @@ def fetch_climate_split(api_key, start_date, end_date, uf, chunk_days=30, max_re
 
 climate_sc = fetch_climate_split(api_key, "2014-12-01", "2026-02-28", "SC")
 climate_sc.to_csv("data/joinville/climate_sc.csv", index=False)
+
+
+# get data for state capital cities
+capital_cities = {
+    "AC": 1200401,
+    "AL": 2704302,
+    "AP": 1600303,
+    "AM": 1302603,
+    "BA": 2927408,
+    "CE": 2304400,
+    "DF": 5300108,
+    "ES": 3205309,
+    "GO": 5208707,
+    "MA": 2111300,
+    "MT": 5103403,
+    "MS": 5002704,
+    "MG": 3106200,
+    "PA": 1501402,
+    "PB": 2507507,
+    "PR": 4106902,
+    "PE": 2611606,
+    "PI": 2211001,
+    "RJ": 3304557,
+    "RN": 2408102,
+    "RS": 4314902,
+    "RO": 1100205,
+    "RR": 1400100,
+    "SC": 4205407,
+    "SE": 2800308,
+    "SP": 3550308,
+    "TO": 1721000
+}
+
+start_date = "2010-01-01"
+end_date = "2026-03-31"
+
+for uf, geocode in capital_cities.items():
+    print(f"Fetching data for {uf}...")
+    dengue_df = mosqlient.get_infodengue(
+        api_key=api_key,
+        disease="dengue",
+        start_date=start_date,
+        end_date=end_date,
+        uf=uf,
+        geocode=geocode
+    )
+    dengue_df.to_csv(f"data/capital_cities/dengue_{uf}.csv", index=False)
+    climate_df = mosqlient.get_climate(
+        api_key=api_key,
+        start_date=start_date,
+        end_date=end_date,
+        uf=uf,
+        geocode=geocode
+    )
+    climate_df.to_csv(f"data/capital_cities/climate_{uf}.csv", index=False)
+
+    

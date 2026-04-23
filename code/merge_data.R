@@ -47,3 +47,20 @@ sf::st_write(dengue_climate_sc,
              dsn = "data/joinville/dengue_climate_sc.gpkg",
              layer = "dengue_climate_sc",
              delete_layer = TRUE)
+
+# merge data for capital cities
+states <- list(
+  "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+  "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", 
+  "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+)
+
+dengue_climate_capital_cities <- lapply(states, function(uf) {
+  dengue_df <- read_csv(paste0("data/capital_cities/dengue_", uf, ".csv"))
+  climate_df <- read_csv(paste0("data/capital_cities/climate_", uf, "_weekly.csv"))
+  
+  dengue_df %>%
+    rename(epiweek = "SE") %>%
+    left_join(climate_df, by = "epiweek") %>%
+    write_csv(paste0("data/capital_cities/dengue_climate_", uf, ".csv"))
+})

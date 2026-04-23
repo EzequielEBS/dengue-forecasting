@@ -42,3 +42,26 @@ climate_sc <- lapply(unique(climate_sc$geocodigo), function(geocodigo) {
 }) %>%
   bind_rows() %>%
   write_csv("data/joinville/climate_sc_weekly.csv")
+
+# get data for capital cities
+states <- list(
+  "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+  "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", 
+  "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+)
+
+climate_capital_cities <- lapply(states, function(uf) {
+  climate_df <- read_csv(paste0("data/capital_cities/climate_", uf, ".csv"))
+  climate_df %>%
+    group_by(epiweek) %>%
+    summarise(geocodigo = first(geocodigo),
+              temp_min_avg = mean(temp_min),
+              temp_max_avg = mean(temp_max),
+              temp_med_avg = mean(temp_med),
+              precip_total = sum(precip_tot),
+              umid_min_avg = mean(umid_min),
+              umid_max_avg = mean(umid_max),
+              umid_med_avg = mean(umid_med)) %>%
+    write_csv(paste0("data/capital_cities/climate_", uf, "_weekly.csv"))
+})
+  
