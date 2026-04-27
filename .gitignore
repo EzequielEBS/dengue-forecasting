@@ -71,6 +71,37 @@ rsconnect/
 *.shp.xml
 *.gpkg
 
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bcf
+
+# Bibliography
+*.bbl
+*.blg
+
+# Beamer-specific
+*.nav
+*.snm
+
+# Index / glossary
+*.idx
+*.ilg
+*.ind
+*.acn
+*.acr
+*.alg
+
+# Latexmk
+*.run.xml
+
 # Others
 *.exe
 *.html

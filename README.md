@@ -24,10 +24,11 @@ Code and data assets for modeling and forecasting dengue incidence with statisti
 |   |-- rio_de_janeiro/             # Fitted models, plots, and metrics for Rio de Janeiro
 |   |-- joinville/                  # Fitted models, plots, and metrics for Joinville
 |   `-- capital_cities/             # Per-UF selected model outputs
+|-- presentations/
+|   `-- capital_cities_presentation.tex  # Beamer deck for capital-city results
 |-- vignettes/
 |   |-- rio_de_janeiro/             # R Markdown report and rendered HTML
 |   `-- joinville/                  # R Markdown report and rendered HTML
-|-- dengue-forecasting.Rproj
 |-- LICENSE
 `-- README.md
 ```
@@ -105,7 +106,12 @@ The capital-cities pipeline stores selected per-state outputs as `.qs2` files un
 - `data/*/*_weekly.csv` stores weekly aggregated climate variables.
 - `data/*/dengue_climate_*` stores merged dengue-climate modeling inputs.
 - `results/*/summary_metrics.csv`, `mae_*`, `rmse_*`, and `mape_*` contain evaluation metrics.
+- `presentations/` stores slide decks and generated presentation files.
 - `vignettes/*/report.Rmd` contains reproducible reports, with rendered `report.html` files committed alongside generated figures.
+
+## Presentation
+
+The capital-cities Beamer deck is available at `presentations/capital_cities_presentation.tex`. If you want to compile it with the current relative paths, run LaTeX from the `presentations/` directory.
 
 ## Dependencies
 
