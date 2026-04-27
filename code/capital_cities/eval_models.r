@@ -92,7 +92,6 @@ results <- pblapply(states, function(uf) {
     return(wis)
   })
 
-
   maes <- lapply(seq_along(pred), function(j) {
     pred_j <- pred[[j]]
     mae <- mean(abs(pred_j$obs - pred_j$predicted_cases))

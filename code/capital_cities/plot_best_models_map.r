@@ -28,19 +28,35 @@ model_lookup <- tibble::tribble(
   "M13", "SARIMAX", "Uses climate variables"
 )
 
-plot_map <- function(model_col) {
+mean_cases_uf <- lapply(unique(best_models$uf), function(uf) {
+  df <- read_csv(paste0("data/capital_cities/dengue_climate_", uf, "_inla.csv"), show_col_types = FALSE) 
+  df <- df %>%
+    select(casos, municipio_nome)
+  df$uf <- uf
+  df <- df %>%
+    summarise(mean_cases = mean(casos, na.rm = TRUE)) %>%
+    mutate(
+      uf = uf,
+      municipio_nome = df$municipio_nome[1],
+      mean_cases = mean_cases
+    )
+}) %>%
+  bind_rows()
+
+plot_map <- function(model_col, mae = F, cases = F) {
   best_models_plot <- best_models %>%
     mutate(model_id = .data[[model_col]]) %>%
     left_join(model_lookup, by = "model_id")
 
   states_sf <- geobr::read_state(year = 2020, showProgress = FALSE)
-  states_sf <- geobr::read_state(year = 2020, showProgress = FALSE) %>%
+  states_sf <- states_sf %>%
     dplyr::select(
       uf = abbrev_state,
       state_name = name_state,
       geom
     ) %>%
     left_join(best_models_plot, by = "uf") %>%
+    left_join(mean_cases_uf, by = "uf") %>%
     mutate(
       model_type = factor(model_type, levels = c("INLA", "AR", "SARIMAX")),
       climate_group = factor(
@@ -135,11 +151,106 @@ plot_map <- function(model_col) {
       plot.title = element_text(face = "bold", hjust = 0.5),
       legend.text = element_text(size = 12)
     )
-  return(list(plot_model_type = plot_model_type, plot_climate_use = plot_climate_use))
+  
+  plot_mae <- ggplot(states_sf) +
+    geom_sf(aes(fill = mae), color = "white", linewidth = 0.3) +
+    geom_sf(data = capitals_sf, color = "black", size = 1.5, shape = 16) +
+    geom_sf_text(
+      data = capitals_sf, 
+      aes(label = name_muni), 
+      size = 5, 
+      color = "black",
+      nudge_y = -0.4
+    ) +
+    scale_fill_viridis_c(
+      # limits = c(0, max(c(states_sf$mean_cases, states_sf$mae))),
+      option = "C",        # good perceptual balance
+      direction = -1,      # optional: darker = lower MAE (often nicer)
+      na.value = "grey85",
+      name = "MAE"
+    ) +
+    labs(title = "") +
+    theme_void() +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      legend.text = element_text(size = 12)
+    ) +
+    guides(
+      fill = guide_colorbar(
+        barwidth = unit(15, "cm"),  # much wider scale
+        barheight = unit(0.8, "cm")
+      )
+    )
+  
+  plot_cases <- ggplot(states_sf) +
+    geom_sf(aes(fill = mean_cases), color = "white", linewidth = 0.3) +
+    geom_sf(data = capitals_sf, color = "black", size = 1.5, shape = 16) +
+    geom_sf_text(
+      data = capitals_sf, 
+      aes(label = name_muni), 
+      size = 5, 
+      color = "black",
+      nudge_y = -0.4
+    ) +
+    # scale_fill_viridis_c(
+    #   limits = c(0, max(c(states_sf$mean_cases, states_sf$mae))),
+    #   option = "C",        # good perceptual balance
+    #   direction = -1,      # optional: darker = lower MAE (often nicer)
+    #   na.value = "grey85",
+    #   name = "Mean Cases"
+    # ) +
+    scale_fill_distiller(
+      palette = "YlGnBu",
+      direction = 1,
+      na.value = "grey85",
+      name = "Mean Cases"
+    ) +
+    labs(title = "") +
+    theme_void() +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      legend.text = element_text(size = 12)
+    ) +
+    guides(
+      fill = guide_colorbar(
+        barwidth = unit(15, "cm"),  # much wider scale
+        barheight = unit(0.8, "cm")
+      )
+    )
+  
+  if (mae * cases) {
+    return(list(
+      plot_model_type = plot_model_type,
+      plot_climate_use = plot_climate_use,
+      plot_mae = plot_mae,
+      plot_cases = plot_cases
+    ))
+  } else {
+    if (mae) {
+      return(list(
+        plot_model_type = plot_model_type,
+        plot_climate_use = plot_climate_use,
+        plot_mae = plot_mae
+      ))
+    } else if (cases) {
+      return(list(
+        plot_model_type = plot_model_type,
+        plot_climate_use = plot_climate_use,
+        plot_cases = plot_cases
+      ))
+    } else {
+      return(list(
+        plot_model_type = plot_model_type,
+        plot_climate_use = plot_climate_use
+      ))
+    }
+  }
 }
 
 # dir.create("results/capital_cities/plots", recursive = TRUE, showWarnings = FALSE)
-plots_mae <- plot_map(model_col = "best_model_mae")
+plots_mae <- plot_map(model_col = "best_model_mae", mae = TRUE, cases = TRUE)
 plots_wis <- plot_map(model_col = "best_model_wis")
 
 ggsave(
@@ -184,11 +295,35 @@ ggsave(
   dpi = 300
 )
 
+ggsave(
+  filename = file.path(
+    "results/capital_cities/plots",
+    paste0("best_model_mae_map.png")
+  ),
+  plot = plots_mae$plot_mae,
+  width = 10,
+  height = 8,
+  dpi = 300
+)
+ggsave(
+  filename = file.path(
+    "results/capital_cities/plots",
+    paste0("mean_cases_map.png")
+  ),
+  plot = plots_mae$plot_cases,
+  width = 10,
+  height = 8,
+  dpi = 300
+)
+
 plot_model_type <- (plots_mae$plot_model_type + ggtitle("MAE")) +
   (plots_wis$plot_model_type + ggtitle("WIS")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
 plot_climate_use <- (plots_mae$plot_climate_use + ggtitle("MAE")) +
   (plots_wis$plot_climate_use + ggtitle("WIS")) +
+  plot_layout(guides = "collect") & theme(legend.position = "bottom")
+plot_mae_cases <- (plots_mae$plot_mae + ggtitle("MAE")) +
+  (plots_mae$plot_cases + ggtitle("Mean Cases")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
 
 ggsave(
@@ -211,6 +346,16 @@ ggsave(
   height = 8,
   dpi = 300
 )
+ggsave(
+  filename = file.path(
+    "results/capital_cities/plots",
+    paste0("mae_cases_combined.png")
+  ),
+  plot = plot_mae_cases,
+  width = 16,
+  height = 8,
+  dpi = 300
+)
 
 low_high_mae <- c(
   "RR",
@@ -224,7 +369,6 @@ data_plot <- lapply(low_high_mae, function(uf) {
     mutate(uf = uf)
 }) %>%
   bind_rows()
-unique(data_plot$uf)
 
 # plot time series of some capitals
 plot_low_high_mae <- ggplot(data_plot, aes(x = data_iniSE, color = uf)) +
