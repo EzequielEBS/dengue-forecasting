@@ -8,6 +8,19 @@ best_models <- readr::read_csv(
   show_col_types = FALSE
 )
 
+pop <-  lapply(unique(best_models$uf), function(uf) {
+  df <- read_csv(paste0("data/capital_cities/dengue_climate_", uf, "_inla.csv"), show_col_types = FALSE) 
+  # start_week <- df[df$epiweek == 202501, "time_id"]$time_id
+  df <- df %>%
+    select(pop) %>%
+    slice(1) %>%
+    mutate(uf = uf)
+}) %>%
+  bind_rows()
+
+best_models <- best_models %>%
+  left_join(pop, by = "uf")
+
 print(best_models %>% arrange(best_model_wis), n=Inf)
 
 model_lookup <- tibble::tribble(
@@ -31,14 +44,14 @@ model_lookup <- tibble::tribble(
 mean_cases_uf <- lapply(unique(best_models$uf), function(uf) {
   df <- read_csv(paste0("data/capital_cities/dengue_climate_", uf, "_inla.csv"), show_col_types = FALSE) 
   df <- df %>%
-    select(casos, municipio_nome)
+    select(casos, municipio_nome, pop)
   df$uf <- uf
   df <- df %>%
     summarise(mean_cases = mean(casos, na.rm = TRUE)) %>%
     mutate(
       uf = uf,
       municipio_nome = df$municipio_nome[1],
-      mean_cases = mean_cases
+      mean_incidence_per_100k = mean_cases / df$pop[1] * 100000
     )
 }) %>%
   bind_rows()
@@ -153,7 +166,7 @@ plot_map <- function(model_col, mae = F, cases = F) {
     )
   
   plot_mae <- ggplot(states_sf) +
-    geom_sf(aes(fill = mae), color = "white", linewidth = 0.3) +
+    geom_sf(aes(fill = mae/pop*100000), color = "white", linewidth = 0.3) +
     geom_sf(data = capitals_sf, color = "black", size = 1.5, shape = 16) +
     geom_sf_text(
       data = capitals_sf, 
@@ -167,7 +180,7 @@ plot_map <- function(model_col, mae = F, cases = F) {
       option = "C",        # good perceptual balance
       direction = -1,      # optional: darker = lower MAE (often nicer)
       na.value = "grey85",
-      name = "MAE"
+      name = "MAE (per 100k)"
     ) +
     labs(title = "") +
     theme_void() +
@@ -184,7 +197,7 @@ plot_map <- function(model_col, mae = F, cases = F) {
     )
   
   plot_cases <- ggplot(states_sf) +
-    geom_sf(aes(fill = mean_cases), color = "white", linewidth = 0.3) +
+    geom_sf(aes(fill = mean_incidence_per_100k), color = "white", linewidth = 0.3) +
     geom_sf(data = capitals_sf, color = "black", size = 1.5, shape = 16) +
     geom_sf_text(
       data = capitals_sf, 
@@ -204,7 +217,7 @@ plot_map <- function(model_col, mae = F, cases = F) {
       palette = "YlGnBu",
       direction = 1,
       na.value = "grey85",
-      name = "Mean Cases"
+      name = "Mean Incidence\n(per 100k)"
     ) +
     labs(title = "") +
     theme_void() +
@@ -308,7 +321,7 @@ ggsave(
 ggsave(
   filename = file.path(
     "results/capital_cities/plots",
-    paste0("mean_cases_map.png")
+    paste0("mean_incidence_map.png")
   ),
   plot = plots_mae$plot_cases,
   width = 10,
@@ -322,8 +335,11 @@ plot_model_type <- (plots_mae$plot_model_type + ggtitle("MAE")) +
 plot_climate_use <- (plots_mae$plot_climate_use + ggtitle("MAE")) +
   (plots_wis$plot_climate_use + ggtitle("WIS")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
-plot_mae_cases <- (plots_mae$plot_mae + ggtitle("MAE")) +
-  (plots_mae$plot_cases + ggtitle("Mean Cases")) +
+plot_mae_incidence <- (plots_mae$plot_mae + ggtitle("MAE (per 100k)")) +
+  (plots_mae$plot_cases + ggtitle("Mean Incidence (per 100k)")) +
+  plot_layout(guides = "collect") & theme(legend.position = "bottom")
+plot_climate_incidence <- (plots_mae$plot_climate_use + ggtitle("MAE")) +
+  (plots_mae$plot_cases + ggtitle("Mean Incidence (per 100k)")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
 
 ggsave(
@@ -349,9 +365,19 @@ ggsave(
 ggsave(
   filename = file.path(
     "results/capital_cities/plots",
-    paste0("mae_cases_combined.png")
+    paste0("mae_incidence_combined.png")
   ),
-  plot = plot_mae_cases,
+  plot = plot_mae_incidence,
+  width = 16,
+  height = 8,
+  dpi = 300
+)
+ggsave(
+  filename = file.path(
+    "results/capital_cities/plots",
+    paste0("climate_incidence_combined.png")
+  ),
+  plot = plot_climate_incidence,
   width = 16,
   height = 8,
   dpi = 300
