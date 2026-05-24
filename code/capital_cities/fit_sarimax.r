@@ -402,19 +402,19 @@ for (uf in states) {
   stopCluster(cl)
 
   if (!is.null(pred_sarimax_base)) {
-    write_csv(pred_sarimax_base, paste0("results/capital_cities/results_M9", uf, ".csv"))
+    write_csv(pred_sarimax_base, paste0("results/capital_cities/", uf, "/results_M9.csv"))
   }
   if (!is.null(pred_sarimax_temp8w)) {
-    write_csv(pred_sarimax_temp8w, paste0("results/capital_cities/results_M10", uf, ".csv"))
+    write_csv(pred_sarimax_temp8w, paste0("results/capital_cities/", uf, "/results_M10.csv"))
   }
   if (!is.null(pred_sarimax_temp8w_precip52w)) {
-    write_csv(pred_sarimax_temp8w_precip52w, paste0("results/capital_cities/results_M11", uf, ".csv"))
+    write_csv(pred_sarimax_temp8w_precip52w, paste0("results/capital_cities/", uf, "/results_M11.csv"))
   }
   if (!is.null(pred_sarimax_temp8w_umid12w)) {
-    write_csv(pred_sarimax_temp8w_umid12w, paste0("results/capital_cities/results_M12", uf, ".csv"))
+    write_csv(pred_sarimax_temp8w_umid12w, paste0("results/capital_cities/", uf, "/results_M12.csv"))
   }
   if (!is.null(pred_sarimax_temp12w)) {
-    write_csv(pred_sarimax_temp12w, paste0("results/capital_cities/results_M13", uf, ".csv"))
+    write_csv(pred_sarimax_temp12w, paste0("results/capital_cities/", uf, "/results_M13.csv"))
   }
 }
 

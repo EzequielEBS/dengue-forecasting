@@ -315,7 +315,9 @@ run_sarimax <- function(data, cov_name, w, par, method = "CSS",
                       ) {
   data_i <- ts(data[data$time_id <= w, ],
                 frequency = 52, 
-                start = c(2015, 9)
+                start = c(as.numeric(substr(min(data$epiweek), 1, 4)),
+                        as.numeric(substr(min(data$epiweek), 5, 6))
+                    )
   )
   if (is.null(cov_name)) {
     xreg <- NULL
@@ -323,7 +325,9 @@ run_sarimax <- function(data, cov_name, w, par, method = "CSS",
   } else {
     xreg <- ts(data[data$time_id <= w, cov_name],
                 frequency = 52, 
-                start = c(2015, 9)
+                start = c(as.numeric(substr(min(data$epiweek), 1, 4)),
+                        as.numeric(substr(min(data$epiweek), 5, 6))
+                    )
     )
     xnew <- data[data$time_id > w & data$time_id <= w + len_windows,
                   cov_name]

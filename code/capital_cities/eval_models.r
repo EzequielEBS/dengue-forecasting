@@ -20,75 +20,48 @@ results <- pblapply(states, function(uf) {
   print(paste0("Evaluating models for ", uf))
   data <- read_csv(paste0("data/capital_cities/dengue_climate_", uf, "_inla.csv"), show_col_types = FALSE)
   models_list <- list.files(paste0("results/capital_cities/", uf), full.names = TRUE)
-  models <- lapply(models_list, qs_read)
+  models <- lapply(models_list, read_csv)
   model_names <- gsub(paste0("results/capital_cities/", uf), "", models_list)
-  model_names <- gsub("/results_|.qs2", "", model_names)
+  model_names <- gsub("/results_|.csv", "", model_names)
   names(models) <- model_names
 
   pred <- lapply(seq_along(models), function(i) {
     model <- models[[i]]
     model_name <- names(models)[i]
-    if (model_name == "M8") {
-      model <- model %>% filter(horizon > 0)
-      model <- model %>% rename(
-        index = horizon,
-        window = window_index,
-        date_iniSE = date,
-        predicted_cases = pred_mean
-      )
-      model <- model %>% mutate(
-        lower_ci = q0.025,
-        upper_ci = q0.975
-      )
-      model <- model %>% select(
-        date_iniSE, obs, predicted_cases, lower_ci, upper_ci, index, window
-      )
-      pred <- model
-    } else if (model_name %in% c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")) {
-      if (is.null(model$data_inla)) {
-        pred <- get_pred(model[[1]]$data_inla, len_windows = len_windows)
-      } else {
-        pred <- get_pred(model$data_inla, len_windows = len_windows)
-      }
-    } else {
-      pred <- get_pred(model, len_windows = len_windows)
-    }
+    model <- model %>% filter(horizon > 0)
+    model <- model %>% rename(
+      index = horizon,
+      window = window_index,
+      date_iniSE = date,
+      predicted_cases = pred_mean
+    )
+    model <- model %>% mutate(
+      lower_ci = q0.025,
+      upper_ci = q0.975
+    )
+    model <- model %>% select(
+      date_iniSE, obs, predicted_cases, lower_ci, upper_ci, index, window
+    )
+    pred <- model
     return(pred)
   })
 
   wis <- lapply(seq_along(models), function(i) {
     model <- models[[i]]
     model_name <- names(models)[i]
-    if (model_name == "M8") {
-      model <- model %>% filter(horizon > 0)
-      model <- model %>% rename(
-        index = horizon,
-        window = window_index,
-        date_iniSE = date,
-        predicted_cases = pred_mean
-      )
-      quant_df <- model %>% select(starts_with("q"))
-      wis <- scoringutils::wis(
-        model$obs,
-        as.matrix(quant_df),
-        quantiles
-      ) %>% mean()
-    } else if (model_name %in% c("M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7")) {
-      if (is.null(model$data_inla)) {
-        wis <- mean(sapply(model[[1]]$fit, compute_wis, quantile_level = quantiles, 
-                      data = data, outcome = "casos"))
-      } else {
-        wis <- mean(sapply(model[[1]]$fit, compute_wis, quantile_level = quantiles, 
-                      data = data, outcome = "casos"))
-      }
-    } else {
-      wis <- mean(sapply(model, function(pred) {
-        rows_filter <- (nrow(pred) - len_windows + 1):nrow(pred)
-        pred_matrix <- as.matrix(pred[rows_filter, -c(1:5)])
-        obs_values <- pred[rows_filter, "obs"]
-        scoringutils::wis(obs_values, pred_matrix, quantiles)
-      }))
-    }
+    model <- model %>% filter(horizon > 0)
+    model <- model %>% rename(
+      index = horizon,
+      window = window_index,
+      date_iniSE = date,
+      predicted_cases = pred_mean
+    )
+    quant_df <- model %>% select(starts_with("q"))
+    wis <- scoringutils::wis(
+      model$obs,
+      as.matrix(quant_df),
+      quantiles
+    ) %>% mean()
     return(wis)
   })
 

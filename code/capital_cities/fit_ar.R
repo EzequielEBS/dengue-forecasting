@@ -220,7 +220,7 @@ best_model_capital_cities <- pblapply(states, function(uf) {
   best_p <- ps[which.min(unlist(maes))]
   best_pred <- results$data[[which.min(unlist(maes))]]
   best_pred$p <- best_p
-  qs_save(best_pred, file = paste0("results/capital_cities/", uf, "/results_M8.qs2"))
+  write_csv(best_pred, file = paste0("results/capital_cities/", uf, "/results_M8.csv"))
   return(list(uf = uf, best_p = best_p, 
     data = best_pred,
     mae = min(unlist(maes))))
